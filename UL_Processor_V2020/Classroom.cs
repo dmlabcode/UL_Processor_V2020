@@ -139,7 +139,7 @@ namespace UL_Processor_V2020
                         String[] line = commaLine.Split(',');
                         if (line.Length > 16 && line[1] != "")
                         {
-                            Person person = new Person(commaLine, mapById, dList,lList);//longid
+                            Person person = new Person(commaLine, mapById, dList, lList);//longid
 
                             if (!personBaseMappings.ContainsKey(person.mapId))
                             {
@@ -192,12 +192,12 @@ namespace UL_Processor_V2020
             {
                 ClassroomDay classRoomDay = new ClassroomDay(day);
                 classRoomDay.setMappings(dir + "//" + Utilities.getDateDashStr(day) + "//MAPPINGS//MAPPING_" + className + ".CSV", personBaseMappings, mapById, startHour, endHour, endMinute);
- 
+
                 //CLEAN UBI
                 classRoomDay.createCleanUbiFile(dir, startHour, endHour);
             }
 
-       }
+        }
         public void process(Boolean all)
         {
             makeDayReportLists();
@@ -241,13 +241,10 @@ namespace UL_Processor_V2020
                     //*INTERACTIONS*/
                     String szAngleOutputFile = dir + "//SYNC//PAIRANGLES//DAILY_ANGLES" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
                     String szAppOutputFile = dir + "//SYNC//APPROACH//DAILY_APP_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
-                    Dictionary<String, Pair> pairs = classRoomDay.countInteractions(this.grMin, this.grMax,this.angle, szAngleOutputFile, szAppOutputFile); //count interactions but no need to write a file
+                    Dictionary<String, Pair> pairs = classRoomDay.countInteractions(this.grMin, this.grMax, this.angle, szAngleOutputFile, szAppOutputFile); //count interactions but no need to write a file
 
                     //*PAIRACTIVITY REPORT*/
                     String szPairActOutputFile = dir + "//SYNC//PAIRACTIVITY//PAIRACTIVITY_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
-                    classRoomDay.writePairActivityData(pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList);
-                    //TODELETE:
-                    classRoomDay.writePairActivityData(pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList);
                     classRoomDay.writePairActivityData(pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList);
 
                     filesToMerge["PAIRACTIVITIES"].Add(szPairActOutputFile);
@@ -258,8 +255,8 @@ namespace UL_Processor_V2020
 
                     //*SOCIALONSETS  REPORT*/
                     String szSocialOnsetputFile = dir + "//SYNC//SOCIALONSETS//DAYSOCIALONSETS_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
-                    classRoomDay.writeSocialOnsetData( className, szSocialOnsetputFile, this.diagnosisList, this.languagesList);
-                        //pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList);
+                    classRoomDay.writeSocialOnsetData(className, szSocialOnsetputFile, this.diagnosisList, this.languagesList);
+                    //pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList);
                     filesToMerge["SOCIALONSETS"].Add(szSocialOnsetputFile);
 
                     //sw.WriteLine("Person 1, Person2, Interaction Time, Interaction Millisecond, Interaction, "+ angle+"Interaction, Angle1, Angle2, Leftx,Lefty,Rightx,Righty, Leftx2,Lefty2,Rightx2,Righty2,Type1, Type2, Gender1, Gender2, Diagnosis1, Diagnosis2, WasTalking1, WasTalking2 ");
@@ -274,7 +271,7 @@ namespace UL_Processor_V2020
             }
 
         }
-         
+
         public void processGofRfiles()
         {
             foreach (DateTime day in classRoomDays)
@@ -372,7 +369,7 @@ namespace UL_Processor_V2020
 
         }
     }
-         
+
     class ClassroomToDelete
     {
         public String dir = "";
@@ -510,8 +507,8 @@ namespace UL_Processor_V2020
                 Directory.CreateDirectory(dir + "//SYNC//MINACTIVITIES");
 
         }
-  
-        
+
+
         public Dictionary<String, List<String>> filesToMerge = new Dictionary<String, List<string>>();
         public void mergeDayFiles()
         {

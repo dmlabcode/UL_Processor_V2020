@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UL_Processor_V2020
 {
-    
+
 
     public class PersonInfo
     {
@@ -16,7 +16,7 @@ namespace UL_Processor_V2020
         public double y = 0;
 
     }
-    public class PersonSuperInfo: PersonInfo
+    public class PersonSuperInfo : PersonInfo
     {
         public double xl = 0;
         public double yl = 0;

@@ -7,7 +7,7 @@ using System.IO;
 using System.Xml;
 namespace UL_Processor_V2020
 {
-    
+
     public class ClassroomDay
     {
         public DateTime classDay;
@@ -17,6 +17,9 @@ namespace UL_Processor_V2020
         public Dictionary<String, List<UbiLocation>> ubiLocationsL = new Dictionary<string, List<UbiLocation>>();
         public Dictionary<String, List<UbiLocation>> ubiLocationsR = new Dictionary<string, List<UbiLocation>>();
         Dictionary<DateTime, Dictionary<String, PersonSuperInfo>> ubiTenths = new Dictionary<DateTime, Dictionary<string, PersonSuperInfo>>();
+        Dictionary<String, DateTime> subjectStartLena = new Dictionary<string, DateTime>();
+        Dictionary<String, DateTime> subjectEndLena = new Dictionary<string, DateTime>();
+
 
         public List<DateTime> maxTimes = new List<DateTime>();
         public List<Activity> logActivities = new List<Activity>();
@@ -28,7 +31,7 @@ namespace UL_Processor_V2020
             classDay = day;
         }
         public void writeSocialOnsetData(String className, String szOutputFile, List<String> diagnosisList, List<String> languagesList)
-        { 
+        {
             TextWriter sw = new StreamWriter(szOutputFile);// countDays > 0);
             /*sw.WriteLine("File,Date,Subject,LenaID,SubjectType,segmentid," +
                 "voctype,recstart,startsec,endsec,starttime,endtime,duration," +
@@ -44,55 +47,55 @@ namespace UL_Processor_V2020
             {
                 foreach (LenaOnset lo in lenaOnsets[bid])
                 {
-                     sw.WriteLine( 
-                       lo.itsFile+ "," +
-                                                                                            classDay + "," +
-                                                                                            lo.id + "," +
-                                                                                            lo.lenaId+"," +
-                                                                                            lo.subjectType + "," +
-                                                                                            lo.segmentId+"," +
-                                                                                            lo.type + "," +
-                                                                                            Utilities.getTimeStr(lo.recStartTime) + "," +
-                                                                                            lo.startSec + "," +
-                                                                                            lo.endSec + "," +
-                                                                                            Utilities.getTimeStr(lo.startTime) + "," +
-                                                                                            Utilities.getTimeStr(lo.endTime) + "," +
-                                                                                            String.Format("{0:0.00}", lo.durSecs) + "," +
-                                                                                            String.Format("{0:0.00}", lo.segmentDurSecs) + "," +
-                                                                                            String.Format("{0:0.00}", lo.count) +","+
-                                                                                            String.Format("{0:0.00}", lo.avgDb) + "," +
-                                                                                            String.Format("{0:0.00}", lo.peakDb) + "," +
-                                                                                            String.Format("{0:0.00}", lo.tc)+","+
-                                                                                            (lo.inSocialContact?"YES":"NO")); 
+                    sw.WriteLine(
+                      lo.itsFile + "," +
+                                                                                           classDay + "," +
+                                                                                           lo.id + "," +
+                                                                                           lo.lenaId + "," +
+                                                                                           lo.subjectType + "," +
+                                                                                           lo.segmentId + "," +
+                                                                                           lo.type + "," +
+                                                                                           Utilities.getTimeStr(lo.recStartTime) + "," +
+                                                                                           lo.startSec + "," +
+                                                                                           lo.endSec + "," +
+                                                                                           Utilities.getTimeStr(lo.startTime) + "," +
+                                                                                           Utilities.getTimeStr(lo.endTime) + "," +
+                                                                                           String.Format("{0:0.00}", lo.durSecs) + "," +
+                                                                                           String.Format("{0:0.00}", lo.segmentDurSecs) + "," +
+                                                                                           String.Format("{0:0.00}", lo.count) + "," +
+                                                                                           String.Format("{0:0.00}", lo.avgDb) + "," +
+                                                                                           String.Format("{0:0.00}", lo.peakDb) + "," +
+                                                                                           String.Format("{0:0.00}", lo.tc) + "," +
+                                                                                           (lo.inSocialContact ? "YES" : "NO"));
                 }
 
             }
         }
         public void writePairActivityData(Dictionary<String, Pair> pairs, String className, String szOutputFile, List<String> diagnosisList, List<String> languagesList)
         {
-            TextWriter sw = new StreamWriter(szOutputFile); 
+            TextWriter sw = new StreamWriter(szOutputFile);
 
 
-            String szHeader = 
-"Date,Subject,Partner,SubjectShortID,PartnerShortID,SubjectDiagnosis,PartnerDiagnosis,SubjectLanguage,PartnerLanguage,"+
-"SubjectGender,PartnerGender,Adult,SubjectStatus,PartnerStatus,SubjectType,PartnerType,"+
-"Input1_pvc_or_sac,Input2_pvc_or_stc,"+
-"Input3_dur_pvd_or_uttl,PairBlockTalking,PairTalkingDuration,"+
+            String szHeader =
+"Date,Subject,Partner,SubjectShortID,PartnerShortID,SubjectDiagnosis,PartnerDiagnosis,SubjectLanguage,PartnerLanguage," +
+"SubjectGender,PartnerGender,Adult,SubjectStatus,PartnerStatus,SubjectType,PartnerType," +
+"Input1_pvc_or_sac,Input2_pvc_or_stc," +
+"Input3_dur_pvd_or_uttl,PairBlockTalking,PairTalkingDuration," +
 //taken out Subject-Talking-Duration-From_Start,"+Partner-Talking-Duration-From-Start,
-"Subject-Talking-Duration-Evenly-Spread,Partner-Talking-Duration-Evenly-Spread,"+
-"SubjectTurnCount,PartnerTurnCount,SubjectVocCount,PartnerVocCount,SubjectAdultCount,PartnerAdultCount,SubjectNoise,"+
-"PartnerNoise,SubjectOLN,PartnerOLN,SubjectCry,PartnerCry,SubjectJoinedCry,PartnerJoinedCry,JoinedCry,PairProximityDuration,"+
-"PairOrientation-ProximityDuration,SharedTimeinClassroom,SubjectTime,PartnerTime,TotalRecordingTime,WUBITotalVD,TotalVD,"+
-"PartnerWUBITotalVD,PartnerTotalVD,WUBITotalVC,TotalVC,PartnerWUBITotalVC,PartnerTotalVC,WUBITotalTC,TotalTC,PartnerWUBITotalTC,"+
-"PartnerTotalTC,WUBITotalAC,TotalAC,PartnerWUBITotalAC,PartnerTotalAC,WUBITotalNO,TotalNO,PartnerWUBITotalNO,PartnerTotalNO,"+
-"WUBITotalOLN,TotalOLN,PartnerWUBITotalOLN,PartnerTotalOLN,WUBITotalCRY,TotalCRY,PartnerWUBITotalCRY,PartnerTotalCRY,"+
+"Subject-Talking-Duration-Evenly-Spread,Partner-Talking-Duration-Evenly-Spread," +
+"SubjectTurnCount,PartnerTurnCount,SubjectVocCount,PartnerVocCount,SubjectAdultCount,PartnerAdultCount,SubjectNoise," +
+"PartnerNoise,SubjectOLN,PartnerOLN,SubjectCry,PartnerCry,SubjectJoinedCry,PartnerJoinedCry,JoinedCry,PairProximityDuration," +
+"PairOrientation-ProximityDuration,SharedTimeinClassroom,SubjectTime,PartnerTime,TotalRecordingTime,WUBITotalVD,TotalVD," +
+"PartnerWUBITotalVD,PartnerTotalVD,WUBITotalVC,TotalVC,PartnerWUBITotalVC,PartnerTotalVC,WUBITotalTC,TotalTC,PartnerWUBITotalTC," +
+"PartnerTotalTC,WUBITotalAC,TotalAC,PartnerWUBITotalAC,PartnerTotalAC,WUBITotalNO,TotalNO,PartnerWUBITotalNO,PartnerTotalNO," +
+"WUBITotalOLN,TotalOLN,PartnerWUBITotalOLN,PartnerTotalOLN,WUBITotalCRY,TotalCRY,PartnerWUBITotalCRY,PartnerTotalCRY," +
 "WUBITotalAV_DB,TotalAV_DB,PartnerWUBITotalAV_DB,PartnerTotalAV_DB,WUBITotalAV_PEAK_DB,TotalAV_PEAK_DB,PartnerWUBITotalAV_PEAK_DB,PartnerTotalAV_PEAK_DB,CLASSROOM";
             //82
 
             String newDiagnosis = "";
-            foreach(String d in diagnosisList)
+            foreach (String d in diagnosisList)
             {
-                newDiagnosis += ("Subject"+d + ",Partner" + d + ",");
+                newDiagnosis += ("Subject" + d + ",Partner" + d + ",");
             }
             String newLanguages = "";
             foreach (String l in languagesList)
@@ -100,7 +103,7 @@ namespace UL_Processor_V2020
                 newLanguages += newLanguages += ("Subject" + l + ",Partner" + l + ",");
             }
 
-            newDiagnosis= newDiagnosis=="SubjectDiagnosis,PartnerDiagnosis,SubjectLanguage,PartnerLanguage,"? "SubjectDiagnosis,PartnerDiagnosis," : newDiagnosis;
+            newDiagnosis = newDiagnosis == "SubjectDiagnosis,PartnerDiagnosis,SubjectLanguage,PartnerLanguage," ? "SubjectDiagnosis,PartnerDiagnosis," : newDiagnosis;
             newLanguages = newLanguages == "" ? "SubjectLanguage,PartnerLanguage," : newLanguages;
             szHeader.Replace("SubjectDiagnosis,PartnerDiagnosis,", newDiagnosis);
             szHeader.Replace("SubjectLanguage,PartnerLanguage,", newLanguages);
@@ -112,7 +115,7 @@ namespace UL_Processor_V2020
                 String szSubject = szPair.Split('|')[0];
                 String szPartner = szPair.Split('|')[1];
                 Person subject = personBaseMappings[szSubject];
-                Person partner= personBaseMappings[szPartner];
+                Person partner = personBaseMappings[szPartner];
                 Pair pair = pairs[szPair];
                 PersonDayInfo sdi = Utilities.getPerson(personDayMappings, szSubject);
                 PersonDayInfo pdi = Utilities.getPerson(personDayMappings, szPartner);
@@ -138,8 +141,8 @@ namespace UL_Processor_V2020
                 pos = 0;
                 foreach (String l in languagesList)
                 {
-                    newPairLanguages +=  ( l + "," + partner.languagesList[pos] + ",");
-                    newPairLanguagesP += (partner.languagesList[pos] + "," + l+ ",");
+                    newPairLanguages += (l + "," + partner.languagesList[pos] + ",");
+                    newPairLanguagesP += (partner.languagesList[pos] + "," + l + ",");
                     pos++;
                 }
 
@@ -149,8 +152,8 @@ namespace UL_Processor_V2020
                 partner.longId + "," +
                 subject.shortId + "," +
                 partner.shortId + "," +
-                newPairDiagnosis+
-                newPairLanguages+
+                newPairDiagnosis +
+                newPairLanguages +
                 subject.gender + "," +
                 partner.gender + "," +
                 (subject.longId.Contains("_L") || subject.longId.Contains("_T") || partner.longId.Contains("_L") || partner.longId.Contains("_T")) + "," +
@@ -158,13 +161,13 @@ namespace UL_Processor_V2020
                 pdi.status + "," +
                 subject.subjectType + "," +
                 partner.subjectType + "," +
-                              (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttCount.ToString() : subjectLenaVarsInContact.totalAdultWordCount.ToString()) : "NA" )+ "," +
-                (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttCount.ToString() : subjectLenaVarsInContact.totalChildUttCount.ToString()) : "NA" )+ "," +
+                              (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttCount.ToString() : subjectLenaVarsInContact.totalAdultWordCount.ToString()) : "NA") + "," +
+                (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttCount.ToString() : subjectLenaVarsInContact.totalChildUttCount.ToString()) : "NA") + "," +
                 (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttDuration.ToString() : subjectLenaVarsInContact.totalAdultWordCount.ToString()) : "NA") + "," +
-                pair.pairBlockTalking+","+
-                pair.pairProxOriDuration+","+//partnerLenaVarsInContact.totalChildUttDuration + "," +
-//"NA," +//DEBUG FINISH UP?
-//"NA," +//DEBUG FINISH UP?
+                pair.pairBlockTalking + "," +
+                pair.pairProxOriDuration + "," +//partnerLenaVarsInContact.totalChildUttDuration + "," +
+                                                //"NA," +//DEBUG FINISH UP?
+                                                //"NA," +//DEBUG FINISH UP?
                 subjectLenaVarsInContact.totalChildUttDuration + "," +
                 partnerLenaVarsInContact.totalChildUttDuration + "," +
                 subjectLenaVarsInContact.totalTurnCounts + "," +
@@ -180,15 +183,15 @@ namespace UL_Processor_V2020
                 subjectLenaVarsInContact.totalChildCryDuration + "," +
                 partnerLenaVarsInContact.totalChildCryDuration + "," +
 
-                pair.joinedCry+","+
-                pair.subjectJoinedCry+","+
-                pair.partnerJoinedCry+","+
-                pair.pairProxDuration+","+
+                pair.joinedCry + "," +
+                pair.subjectJoinedCry + "," +
+                pair.partnerJoinedCry + "," +
+                pair.pairProxDuration + "," +
                 pair.pairProxOriDuration + "," +
                 pair.sharedTimeInSecs + "," +
                 pair.subjectTotalTimeInSecs + "," +
                 pair.partnerTotalTimeInSecs + "," +
-                recSecs+","+
+                recSecs + "," +
                 subjectLenaVarsInWUBI.totalChildUttDuration + "," +
                 subjectLenaVarsInTotal.totalChildUttDuration + "," +
                 partnerLenaVarsInWUBI.totalChildUttDuration + "," +
@@ -233,7 +236,7 @@ namespace UL_Processor_V2020
                 (subjectLenaVarsInTotal.maxDb != 0 && subjectLenaVarsInTotal.totalSegments != 0 ? subjectLenaVarsInTotal.maxDb / subjectLenaVarsInTotal.totalSegments : 0.00).ToString() + "," +
                 (partnerLenaVarsInWUBI.maxDb != 0 && partnerLenaVarsInWUBI.totalSegments != 0 ? partnerLenaVarsInWUBI.maxDb / partnerLenaVarsInWUBI.totalSegments : 0.00).ToString() + "," +
                 (partnerLenaVarsInTotal.maxDb != 0 && partnerLenaVarsInTotal.totalSegments != 0 ? partnerLenaVarsInTotal.maxDb / partnerLenaVarsInTotal.totalSegments : 0.00).ToString() + "," +
-                className );
+                className);
 
 
 
@@ -252,12 +255,12 @@ namespace UL_Processor_V2020
                 subject.subjectType + "," +
                 partner.subjectType + "," +
                 (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttCount.ToString() : subjectLenaVarsInContact.totalAdultWordCount.ToString()) : "NA") + "," +
-                (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttCount.ToString() : subjectLenaVarsInContact.totalChildUttCount.ToString()) : "NA" )+ "," +
+                (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttCount.ToString() : subjectLenaVarsInContact.totalChildUttCount.ToString()) : "NA") + "," +
                 (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttDuration.ToString() : subjectLenaVarsInContact.totalAdultWordCount.ToString()) : "NA") + "," +
                 pair.pairBlockTalking + "," +
                  pair.pairProxOriDuration + "," +//partnerLenaVarsInContact.totalChildUttDuration + "," +
-//"NA," +
-//"NA," +
+                                                 //"NA," +
+                                                 //"NA," +
                 subjectLenaVarsInContact.totalChildUttDuration + "," +
                 partnerLenaVarsInContact.totalChildUttDuration + "," +
                 subjectLenaVarsInContact.totalTurnCounts + "," +
@@ -343,7 +346,7 @@ namespace UL_Processor_V2020
 
                 subjectLenaVarsInContact = pair.partnerLenaVarsInContact;
                 partnerLenaVarsInContact = pair.subjectLenaVarsInContact;
-                 
+
 
 
                 subjectLenaVarsInWUBI = personDayMappings[szPartner].WUBILenaVars;
@@ -370,8 +373,8 @@ namespace UL_Processor_V2020
                (sdi.status.ToUpper() == "PRESENT" ? (subject.subjectType.ToUpper() == "CHILD" ? partnerLenaVarsInContact.totalChildUttDuration.ToString() : subjectLenaVarsInContact.totalAdultWordCount.ToString()) : "NA") + "," +
                pair.pairBlockTalking + "," +
                pair.pairProxOriDuration + "," +//partnerLenaVarsInContact.totalChildUttDuration + "," +
-//"NA," +
-//"NA," +
+                                               //"NA," +
+                                               //"NA," +
                subjectLenaVarsInContact.totalChildUttDuration + "," +
                partnerLenaVarsInContact.totalChildUttDuration + "," +
                subjectLenaVarsInContact.totalTurnCounts + "," +
@@ -456,10 +459,10 @@ namespace UL_Processor_V2020
                     (!double.IsNaN(p1.yl)) &&
                     (!double.IsNaN(p1.xr)) &&
                     (!double.IsNaN(p1.yr)) &&
-                    p1.x!=0 &&
-                    p1.y!=0);
+                    p1.x != 0 &&
+                    p1.y != 0);
         }
-       
+
         public Dictionary<String, Pair> countInteractions(double minGr, double maxGr, double angle, String szAngleOutputFile, String szAppOutputFile)
         {//pairs are unique not repeated
             Dictionary<String, Pair> pairs = Utilities.getSzPairKey(personDayMappings);
@@ -467,13 +470,13 @@ namespace UL_Processor_V2020
             Boolean doAngles = szAngleOutputFile != "";
             Boolean doApp = szAppOutputFile != "";
 
-            TextWriter sw = doAngles? new StreamWriter(szAngleOutputFile):null;
-            TextWriter swapp =doApp? new StreamWriter(szAppOutputFile):null;
-            if(doAngles) 
-            sw.WriteLine("Person 1, Person2, Interaction Time, Interaction Millisecond, Interaction, "+ angle+"Interaction, Angle1, Angle2, Leftx,Lefty,Rightx,Righty, Leftx2,Lefty2,Rightx2,Righty2,Type1, Type2, Gender1, Gender2, Diagnosis1, Diagnosis2, WasTalking1, WasTalking2 ");
+            TextWriter sw = doAngles ? new StreamWriter(szAngleOutputFile) : null;
+            TextWriter swapp = doApp ? new StreamWriter(szAppOutputFile) : null;
+            if (doAngles)
+                sw.WriteLine("Person 1, Person2, Interaction Time, Interaction Millisecond, Interaction, " + angle + "Interaction, Angle1, Angle2, Leftx,Lefty,Rightx,Righty, Leftx2,Lefty2,Rightx2,Righty2,Type1, Type2, Gender1, Gender2, Diagnosis1, Diagnosis2, WasTalking1, WasTalking2 ");
 
             if (doApp)
-            swapp.WriteLine("Person 1, Person2, Interaction Time, Interaction Millisecond,d1,d2,approachMeters,x10,y10,x20,y20,x11,y11,x21,y21, WithinGR, WithinGRAnd" + angle + "deg, Angle1, Angle2,Type1, Type2, Gender1, Gender2, Diagnosis1, Diagnosis2,LongPerson 1, LongPerson2,  ");
+                swapp.WriteLine("Person 1, Person2, Interaction Time, Interaction Millisecond,d1,d2,approachMeters,x10,y10,x20,y20,x11,y11,x21,y21, WithinGR, WithinGRAnd" + angle + "deg, Angle1, Angle2,Type1, Type2, Gender1, Gender2, Diagnosis1, Diagnosis2,LongPerson 1, LongPerson2,  ");
 
             foreach (DateTime t in ubiTenths.Keys)
             {
@@ -490,7 +493,7 @@ namespace UL_Processor_V2020
                         pair.partnerTotalTimeInSecs += .1;
                     }
 
-                    if (ubiTenths[t].ContainsKey(pair.szSubjectMapId) && 
+                    if (ubiTenths[t].ContainsKey(pair.szSubjectMapId) &&
                         ubiTenths[t].ContainsKey(pair.szPartnerMapId) &&
                         hasAllInfo(ubiTenths[t][pair.szSubjectMapId]) &&
                         hasAllInfo(ubiTenths[t][pair.szPartnerMapId]))
@@ -501,36 +504,36 @@ namespace UL_Processor_V2020
                         Tuple<double, double> angles = Utilities.withinOrientationData(ubiTenths[t][pair.szSubjectMapId], ubiTenths[t][pair.szPartnerMapId]);
                         Boolean orientedCloseness = withinGofR && (Math.Abs(angles.Item1) <= angle && Math.Abs(angles.Item2) <= angle);
                         //
-                        if(doAngles)
-                        sw.WriteLine(pair.szSubjectMapId + "," +
-                                                                        pair.szPartnerMapId + "," +
-                                                                        t.ToLongTimeString() + "," +
-                                                                        t.Millisecond + "," +
-                                                                        (withinGofR ? "0.1" : "0") + "," +
-                                                                        (orientedCloseness ? "0.1" : "0") + "," +
-                                                                        (angles.Item1) + "," +
-                                                                        (angles.Item2) + "," +
-                                                                        ubiTenths[t][pair.szSubjectMapId].xl + "," +
-                                                                        ubiTenths[t][pair.szSubjectMapId].yl + "," +
-                                                                        ubiTenths[t][pair.szSubjectMapId].xr + "," +
-                                                                        ubiTenths[t][pair.szSubjectMapId].yr + "," +
-                                                                        ubiTenths[t][pair.szPartnerMapId].xl + "," +
-                                                                        ubiTenths[t][pair.szPartnerMapId].yl + "," +
-                                                                        ubiTenths[t][pair.szPartnerMapId].xr + "," +
-                                                                        ubiTenths[t][pair.szPartnerMapId].yr + "," +
-                                                                    personBaseMappings[pair.szSubjectMapId].subjectType + "," +
-                                                                    personBaseMappings[pair.szPartnerMapId].subjectType + "," +
-                                                                    personBaseMappings[pair.szSubjectMapId].gender + "," +
-                                                                    personBaseMappings[pair.szPartnerMapId].gender + "," +
-                                                                    personBaseMappings[pair.szSubjectMapId].diagnosis + "," +
-                                                                    personBaseMappings[pair.szPartnerMapId].diagnosis + "," +
-                                                                    ubiTenths[t][pair.szSubjectMapId].wasTalking + "," +
-                                                                    ubiTenths[t][pair.szPartnerMapId].wasTalking);
+                        if (doAngles)
+                            sw.WriteLine(pair.szSubjectMapId + "," +
+                                                                            pair.szPartnerMapId + "," +
+                                                                            t.ToLongTimeString() + "," +
+                                                                            t.Millisecond + "," +
+                                                                            (withinGofR ? "0.1" : "0") + "," +
+                                                                            (orientedCloseness ? "0.1" : "0") + "," +
+                                                                            (angles.Item1) + "," +
+                                                                            (angles.Item2) + "," +
+                                                                            ubiTenths[t][pair.szSubjectMapId].xl + "," +
+                                                                            ubiTenths[t][pair.szSubjectMapId].yl + "," +
+                                                                            ubiTenths[t][pair.szSubjectMapId].xr + "," +
+                                                                            ubiTenths[t][pair.szSubjectMapId].yr + "," +
+                                                                            ubiTenths[t][pair.szPartnerMapId].xl + "," +
+                                                                            ubiTenths[t][pair.szPartnerMapId].yl + "," +
+                                                                            ubiTenths[t][pair.szPartnerMapId].xr + "," +
+                                                                            ubiTenths[t][pair.szPartnerMapId].yr + "," +
+                                                                        personBaseMappings[pair.szSubjectMapId].subjectType + "," +
+                                                                        personBaseMappings[pair.szPartnerMapId].subjectType + "," +
+                                                                        personBaseMappings[pair.szSubjectMapId].gender + "," +
+                                                                        personBaseMappings[pair.szPartnerMapId].gender + "," +
+                                                                        personBaseMappings[pair.szSubjectMapId].diagnosis + "," +
+                                                                        personBaseMappings[pair.szPartnerMapId].diagnosis + "," +
+                                                                        ubiTenths[t][pair.szSubjectMapId].wasTalking + "," +
+                                                                        ubiTenths[t][pair.szPartnerMapId].wasTalking);
 
 
-                        
-                         
-                        pair.pairProxDuration += (withinGofR?.1:0);
+
+
+                        pair.pairProxDuration += (withinGofR ? .1 : 0);
                         if (withinGofR && orientedCloseness)
                         {
                             pair.pairBlockTalking += (ubiTenths[t][pair.szSubjectMapId].lenaVars.totalChildUttDuration + ubiTenths[t][pair.szPartnerMapId].lenaVars.totalChildUttDuration);
@@ -553,16 +556,16 @@ namespace UL_Processor_V2020
                             pair.partnerLenaVarsInContact.totalAdultWordCount += ubiTenths[t][pair.szPartnerMapId].lenaVars.totalAdultWordCount;
                             pair.partnerLenaVarsInContact.totalNoise += ubiTenths[t][pair.szPartnerMapId].lenaVars.totalNoise;
                             pair.partnerLenaVarsInContact.totalOLN += ubiTenths[t][pair.szPartnerMapId].lenaVars.totalOLN;
-                             
-                            if (ubiTenths[t][pair.szSubjectMapId].lenaVars.totalChildCryDuration > 0.00 && ubiTenths[t][pair.szPartnerMapId].lenaVars.totalChildCryDuration>0.00)
+
+                            if (ubiTenths[t][pair.szSubjectMapId].lenaVars.totalChildCryDuration > 0.00 && ubiTenths[t][pair.szPartnerMapId].lenaVars.totalChildCryDuration > 0.00)
                             {
-                                pair.joinedCry+= (ubiTenths[t][pair.szSubjectMapId].lenaVars.totalChildCryDuration + ubiTenths[t][pair.szPartnerMapId].lenaVars.totalChildCryDuration);
+                                pair.joinedCry += (ubiTenths[t][pair.szSubjectMapId].lenaVars.totalChildCryDuration + ubiTenths[t][pair.szPartnerMapId].lenaVars.totalChildCryDuration);
                                 pair.subjectJoinedCry += ubiTenths[t][pair.szSubjectMapId].lenaVars.totalChildCryDuration;
                                 pair.partnerJoinedCry += ubiTenths[t][pair.szPartnerMapId].lenaVars.totalChildCryDuration;
 
                             }
                             //FOR SOCIAL ONSETS
-                            if(ubiTenths[t][pair.szSubjectMapId].wasTalking || ubiTenths[t][pair.szPartnerMapId].wasTalking)
+                            if (ubiTenths[t][pair.szSubjectMapId].wasTalking || ubiTenths[t][pair.szPartnerMapId].wasTalking)
                             {
                                 if (lenaOnsets.ContainsKey(pair.szSubjectMapId))
                                 {
@@ -587,8 +590,9 @@ namespace UL_Processor_V2020
                                 }
 
 
-                               if (lenaOnsets.ContainsKey(pair.szPartnerMapId))
-                               { int pPos = 0;
+                                if (lenaOnsets.ContainsKey(pair.szPartnerMapId))
+                                {
+                                    int pPos = 0;
                                     if (!onsetPos.ContainsKey(pair.szPartnerMapId))
                                         onsetPos.Add(pair.szPartnerMapId, 0);
                                     else
@@ -607,7 +611,7 @@ namespace UL_Processor_V2020
                                     }
                                     onsetPos[pair.szPartnerMapId] = pPos;
                                 }
-                               
+
                                 ///
 
                             }
@@ -688,7 +692,7 @@ namespace UL_Processor_V2020
                                 }
 
 
-                                 dist1 = Math.Sqrt(Utilities.calcSquaredDist(ubiTenths[t][pair.szPartnerMapId], ubiTenths[dt0][pair.szSubjectMapId]));
+                                dist1 = Math.Sqrt(Utilities.calcSquaredDist(ubiTenths[t][pair.szPartnerMapId], ubiTenths[dt0][pair.szSubjectMapId]));
                                 dist0 = Math.Sqrt(Utilities.calcSquaredDist(ubiTenths[dt0][pair.szPartnerMapId], ubiTenths[dt0][pair.szSubjectMapId]));
                                 approachMetersP = dist0 - dist1;
                                 if (!Double.IsNaN(approachMetersP))
@@ -742,20 +746,20 @@ namespace UL_Processor_V2020
                     }
                 }
             }
-            if(doAngles)
-            sw.Close();
-            if(doApp)
-            swapp.Close();
+            if (doAngles)
+                sw.Close();
+            if (doApp)
+                swapp.Close();
             //Date	Subject	Partner	SubjectShortID	PartnerShortID	SubjectDiagnosis	PartnerDiagnosis	
             //SubjectGender	PartnerGender	SubjectLanguage	PartnerLanguage	Adult	SubjectStatus	PartnerStatus	SubjectType	PartnerType
             return pairs;
 
 
         }
-            public void setMappings(String mappingDayFileName, Dictionary<String, Person> personMappings, String mapById, int startHour, int endHour, int endMinute)
-            {
-                personBaseMappings = personMappings;
-                if (File.Exists(mappingDayFileName))
+        public void setMappings(String mappingDayFileName, Dictionary<String, Person> personMappings, String mapById, int startHour, int endHour, int endMinute)
+        {
+            personBaseMappings = personMappings;
+            if (File.Exists(mappingDayFileName))
                 using (StreamReader sr = new StreamReader(mappingDayFileName))
                 {
                     if (!sr.EndOfStream)
@@ -775,93 +779,93 @@ namespace UL_Processor_V2020
                                 person = personMappings[person.mapId];
                                 PersonDayInfo personDayInfo = new PersonDayInfo(commaLine, person.mapId, new DateTime(classDay.Year, classDay.Month, classDay.Day, startHour, 0, 0), new DateTime(classDay.Year, classDay.Month, classDay.Day, endHour, endMinute, 0));
                                 if (!personDayMappings.ContainsKey(person.mapId))
-                                personDayMappings.Add(person.mapId, personDayInfo);
+                                    personDayMappings.Add(person.mapId, personDayInfo);
                             }
                         }
                     }
                 }
 
-            }
-            public void findTagPerson(ref UbiLocation ubiLocation, DateTime dt)
+        }
+        public void findTagPerson(ref UbiLocation ubiLocation, DateTime dt)
+        {
+            foreach (String key in personDayMappings.Keys)
             {
-                foreach(String key in personDayMappings.Keys)
+                PersonDayInfo pdi = personDayMappings[key];
+                if (pdi.present && pdi.status == "PRESENT" &&
+                    dt >= pdi.startDate && dt <= pdi.endDate)
                 {
-                    PersonDayInfo pdi = personDayMappings[key];
-                    if(pdi.present && pdi.status=="PRESENT" &&
-                        dt>=pdi.startDate && dt<=pdi.endDate)
+                    if (ubiLocation.tag == pdi.leftUbi)
                     {
-                        if (ubiLocation.tag == pdi.leftUbi)
-                        {
-                            ubiLocation.id = key;
-                            ubiLocation.type = "L";
-                            break;
-                        }
-                        else if (ubiLocation.tag == pdi.rightUbi)
-                        {
-                            ubiLocation.id = key;
-                            ubiLocation.type = "R";
-                            break;
-                        }
-
-
+                        ubiLocation.id = key;
+                        ubiLocation.type = "L";
+                        break;
                     }
+                    else if (ubiLocation.tag == pdi.rightUbi)
+                    {
+                        ubiLocation.id = key;
+                        ubiLocation.type = "R";
+                        break;
+                    }
+
 
                 }
 
             }
 
-            public void readUbiLogsFromGrFile(String dir) 
+        }
+
+        public void readUbiLogsFromGrFile(String dir)
+        {
+            String szDayFolder = Utilities.getDateDashStr(classDay);
+
+
+            string[] ubiLogFiles = Directory.GetFiles(dir + "//" + szDayFolder + "//Ubisense_Data//");
+            foreach (string file in ubiLogFiles)
             {
-                String szDayFolder = Utilities.getDateDashStr(classDay);
-                
-
-                string[] ubiLogFiles = Directory.GetFiles(dir + "//" + szDayFolder + "//Ubisense_Data//");
-                foreach (string file in ubiLogFiles)
+                String fileName = Path.GetFileName(file);
+                if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith(".log"))
                 {
-                    String fileName = Path.GetFileName(file);
-                    if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith(".log"))
-                    {
 
-                        using (StreamReader sr = new StreamReader(file))
+                    using (StreamReader sr = new StreamReader(file))
+                    {
+                        while (!sr.EndOfStream)
                         {
-                            while (!sr.EndOfStream)
+                            String szLine = sr.ReadLine();
+                            String[] line = szLine.Split(',');
+                            if (line.Length > 5)
                             {
-                                String szLine = sr.ReadLine();
-                                String[] line = szLine.Split(',');
-                                if (line.Length > 5)
-                                {
 
-                                    UbiLocation ubiLoc = new UbiLocation();
-                                    ubiLoc.tag = line[9].Trim(); 
-                                    String ubiId = line[1].Trim();
-                                    String ubiType = ubiId.Substring(ubiId.Length - 1);
-                                    ubiId= ubiId.Substring(0,ubiId.Length - 1);
-                                    ubiLoc.id = ubiId;
-                                    DateTime lineTime = Convert.ToDateTime(line[2]);
-                                    Double xPos = Convert.ToDouble(line[3]);
-                                    Double yPos = Convert.ToDouble(line[4]);
-                                    ubiLoc.x = xPos;
-                                    ubiLoc.y = yPos;
-                                    ubiLoc.time = lineTime;
-                                    if (ubiLoc.type == "L")
-                                    {
-                                        if (!ubiLocationsL.ContainsKey(ubiLoc.id))
-                                            ubiLocationsL.Add(ubiLoc.id, new List<UbiLocation>());
-                                        ubiLocationsL[ubiLoc.id].Add(ubiLoc);
-                                    }
-                                    else
-                                    {
-                                        if (!ubiLocationsR.ContainsKey(ubiLoc.id))
-                                            ubiLocationsR.Add(ubiLoc.id, new List<UbiLocation>());
-                                        ubiLocationsR[ubiLoc.id].Add(ubiLoc);
-                                    }
-                                     
+                                UbiLocation ubiLoc = new UbiLocation();
+                                ubiLoc.tag = line[9].Trim();
+                                String ubiId = line[1].Trim();
+                                String ubiType = ubiId.Substring(ubiId.Length - 1);
+                                ubiId = ubiId.Substring(0, ubiId.Length - 1);
+                                ubiLoc.id = ubiId;
+                                DateTime lineTime = Convert.ToDateTime(line[2]);
+                                Double xPos = Convert.ToDouble(line[3]);
+                                Double yPos = Convert.ToDouble(line[4]);
+                                ubiLoc.x = xPos;
+                                ubiLoc.y = yPos;
+                                ubiLoc.time = lineTime;
+                                if (ubiLoc.type == "L")
+                                {
+                                    if (!ubiLocationsL.ContainsKey(ubiLoc.id))
+                                        ubiLocationsL.Add(ubiLoc.id, new List<UbiLocation>());
+                                    ubiLocationsL[ubiLoc.id].Add(ubiLoc);
                                 }
+                                else
+                                {
+                                    if (!ubiLocationsR.ContainsKey(ubiLoc.id))
+                                        ubiLocationsR.Add(ubiLoc.id, new List<UbiLocation>());
+                                    ubiLocationsR[ubiLoc.id].Add(ubiLoc);
+                                }
+
                             }
                         }
                     }
-                } 
+                }
             }
+        }
 
         public void readUbiLogsAndWriteGrFile(String dir, String szOutputFile, int startHour, int endHour)//, ref ClassroomDay classroomDay)
         {
@@ -888,6 +892,7 @@ namespace UL_Processor_V2020
                                 DateTime lineTime = Convert.ToDateTime(line[2]);
                                 Double xPos = Convert.ToDouble(line[3]);
                                 Double yPos = Convert.ToDouble(line[4]);
+
                                 if (Utilities.isSameDay(lineTime, classDay) &&
                                     lineTime.Hour >= startHour &&
                                     lineTime.Hour <= endHour)
@@ -895,10 +900,15 @@ namespace UL_Processor_V2020
                                     UbiLocation ubiLoc = new UbiLocation();
                                     ubiLoc.tag = tag;
                                     findTagPerson(ref ubiLoc, lineTime);
+                                    if (ubiLoc.id == "")
+                                    {
+                                        // sw.WriteLine(szLine.Replace(tag, "?") + "," + "?" + "," + tag);
+                                    }
 
 
-
-                                    if (ubiLoc.id != "")
+                                    if (ubiLoc.id != "" &&
+                                        lineTime >= subjectStartLena[ubiLoc.id] &&
+                                        lineTime <= subjectEndLena[ubiLoc.id])
                                     {
                                         ubiLoc.x = xPos;
                                         ubiLoc.y = yPos;
@@ -916,9 +926,10 @@ namespace UL_Processor_V2020
                                             ubiLocationsR[ubiLoc.id].Add(ubiLoc);
                                         }
 
-                                        sw.WriteLine(szLine.Replace(tag, ubiLoc.id + ubiLoc.type) +"," + ubiLoc.id + ubiLoc.type+","+ tag);
+                                        sw.WriteLine(szLine.Replace(tag, ubiLoc.id + ubiLoc.type) + "," + ubiLoc.id + ubiLoc.type + "," + tag);
                                         // swc.WriteLine(szLine.Replace(i.tag, personId + i.tagType) + "," + i.tag);
                                     }
+
                                 }
                             }
                         }
@@ -932,11 +943,16 @@ namespace UL_Processor_V2020
         {
             String szDayFolder = Utilities.getDateDashStr(classDay);
             String szDenoisedFolder = dir + "//" + szDayFolder + "//Ubisense_Filtered_Data";
+            szDenoisedFolder = dir + "//" + szDayFolder + "//Ubisense_Data";
+            String szUnDenoisedFolder = dir + "//" + szDayFolder + "//Ubisense_Data//Ubisense_Unfiltered_Data";
 
             if (!Directory.Exists(szDenoisedFolder))
                 Directory.CreateDirectory(szDenoisedFolder);
 
-            
+            if (!Directory.Exists(szUnDenoisedFolder))
+                Directory.CreateDirectory(szUnDenoisedFolder);
+
+
 
             string[] ubiLogFiles = Directory.GetFiles(dir + "//" + szDayFolder + "//Ubisense_Data//");
             foreach (string file in ubiLogFiles)
@@ -944,7 +960,7 @@ namespace UL_Processor_V2020
                 String fileName = Path.GetFileName(file);
                 if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith(".log"))
                 {
-                    TextWriter sw = new StreamWriter(szDenoisedFolder+"//"+fileName.Replace(".log", "_filtered.log"));// countDays > 0);
+                    TextWriter sw = new StreamWriter(szDenoisedFolder + "//" + fileName.Replace(".log", "_filtered.log"));// countDays > 0);
                     using (StreamReader sr = new StreamReader(file))
                     {
                         while (!sr.EndOfStream)
@@ -967,7 +983,7 @@ namespace UL_Processor_V2020
 
 
 
-                                    if (ubiLoc.id != "")
+                                    //if (ubiLoc.id != "")
                                     {
                                         sw.WriteLine(szLine);
                                     }
@@ -978,80 +994,85 @@ namespace UL_Processor_V2020
                     }
                 }
             }
-            
+            foreach (string file in ubiLogFiles)
+            {
+                String fileName = Path.GetFileName(file);
+                File.Move(file, szUnDenoisedFolder + "//" + fileName);
+            }
+
         }
 
         public void setUbiTagData()
+        {
+
+        }
+        public Tuple<String, String, String, String, String> getLogActivities(DateTime start, DateTime end, Boolean ifPresent, String subject)
+        {
+            String acts = "";
+            String children = "";
+            String teachers = "";
+            String nchildren = "";
+            String nteachers = "";
+            start = start.AddSeconds(-start.Second).AddMilliseconds(-start.Millisecond);
+            end = end.AddSeconds(-end.Second).AddMilliseconds(-end.Millisecond);
+            //DELETE DEBUG
+            if (start.Hour >= 9 && start.Minute >= 7)
+            {
+                bool stop = true;
+            }
+            foreach (Activity act in logActivities)
+            {
+
+                //Boolean dateWithin = act.start.TimeOfDay>=start.TimeOfDay && act.start.TimeOfDay<=end.TimeOfDay;
+                //dateWithin = dateWithin || act.end.TimeOfDay >= start.TimeOfDay && act.end.TimeOfDay <= end.TimeOfDay;
+
+                Boolean dateWithin = (start >= act.start && start <= act.end) || (end >= act.start && end <= act.end);
+
+                //if ((act.start.TimeOfDay >= start.TimeOfDay && act.start.TimeOfDay <= end.TimeOfDay) ||
+                //    (act.end.TimeOfDay >= start.TimeOfDay && act.end.TimeOfDay <= end.TimeOfDay))
+                if (dateWithin)
+                {// getChildIdFromSzNumber(Dictionary<String, PersonDayInfo> personDayMappings, String szNum)
+
+                    String szChildren = "";
+                    String szTeachers = "";
+                    int iChildren = 0;
+                    int iTeachers = 0;
+                    Boolean present = ifPresent ? false : true;
+                    foreach (String szChildNum in act.szChildren.Split('|'))
                     {
-
+                        if (szChildNum == subject)
+                            present = true;
+                        iChildren++;
+                        szChildren = szChildren + (szChildren != "" ? "|" : "") + Utilities.getChildIdFromSzNumber(personDayMappings, szChildNum);
                     }
-                    public Tuple<String,String,String, String, String> getLogActivities(DateTime start, DateTime end, Boolean ifPresent, String subject)
+                    foreach (String szTNum in act.szTeachers.Split('|'))
                     {
-                        String acts = "";
-                        String children = "";
-                        String teachers  = "";
-                        String nchildren = "";
-                        String nteachers = "";
-                        start = start.AddSeconds(-start.Second).AddMilliseconds(-start.Millisecond);
-                        end = end.AddSeconds(-end.Second).AddMilliseconds(-end.Millisecond);
-                        //DELETE DEBUG
-                        if (start.Hour>=9&&start.Minute>=7)
-                        {
-                            bool stop = true;
-                        }
-                        foreach(Activity act in logActivities)
-                        {
-
-                            //Boolean dateWithin = act.start.TimeOfDay>=start.TimeOfDay && act.start.TimeOfDay<=end.TimeOfDay;
-                            //dateWithin = dateWithin || act.end.TimeOfDay >= start.TimeOfDay && act.end.TimeOfDay <= end.TimeOfDay;
-
-                            Boolean dateWithin = (start >= act.start && start <= act.end) || (end >= act.start && end <= act.end);
-
-                            //if ((act.start.TimeOfDay >= start.TimeOfDay && act.start.TimeOfDay <= end.TimeOfDay) ||
-                            //    (act.end.TimeOfDay >= start.TimeOfDay && act.end.TimeOfDay <= end.TimeOfDay))
-                            if (dateWithin)
-                            {// getChildIdFromSzNumber(Dictionary<String, PersonDayInfo> personDayMappings, String szNum)
-
-                                String szChildren = "";
-                                String szTeachers = "";
-                                int iChildren =0;
-                                int iTeachers = 0;
-                                Boolean present = ifPresent? false:true;
-                                foreach (String szChildNum in act.szChildren.Split('|'))
-                                {
-                                    if(szChildNum == subject)
-                                    present = true;
-                                    iChildren++;
-                                    szChildren = szChildren + (szChildren != "" ? "|" : "") + Utilities.getChildIdFromSzNumber(personDayMappings, szChildNum);
-                                }
-                                foreach (String szTNum in act.szTeachers.Split('|'))
-                                {
-                                    if (szTNum == subject)
-                                    present = true;
-                                    iTeachers++;
-                                    szTeachers = szTeachers + (szTeachers != "" ? "|" : "") + Utilities.getTeacherIdFromSzNumber(personDayMappings, szTNum);
-                                }
-                                if (present)
-                                {
-                                    acts = acts != "" ? acts + "+" + act.type : act.type;
-                                    nchildren = nchildren != "" ? nchildren + "+" + iChildren.ToString() : iChildren.ToString();
-                                    nteachers = nteachers != "" ? nteachers + "+" + iTeachers.ToString() : iTeachers.ToString();
-                                    children = children != "" ? children + "+" + szChildren : szChildren;
-                                    teachers = teachers != "" ? teachers + "+" + szTeachers : szTeachers;
-                                }
-                            }
-                            if (act.start.TimeOfDay > end.TimeOfDay)
-                                break;
-                        }
-
-                        //DELETE DEBUG
-                        if (start.Hour >= 9 && start.Minute >= 6 && acts=="")
-                        {
-                            bool stop = true;
-                        }
-
-                        return new Tuple<string, string, string, String, String>(acts,children,teachers,nchildren,nteachers);
+                        if (szTNum == subject)
+                            present = true;
+                        iTeachers++;
+                        szTeachers = szTeachers + (szTeachers != "" ? "|" : "") + Utilities.getTeacherIdFromSzNumber(personDayMappings, szTNum);
                     }
+                    if (present)
+                    {
+                        acts = acts != "" ? acts + "+" + act.type : act.type;
+                        nchildren = nchildren != "" ? nchildren + "+" + iChildren.ToString() : iChildren.ToString();
+                        nteachers = nteachers != "" ? nteachers + "+" + iTeachers.ToString() : iTeachers.ToString();
+                        children = children != "" ? children + "+" + szChildren : szChildren;
+                        teachers = teachers != "" ? teachers + "+" + szTeachers : szTeachers;
+                    }
+                }
+                if (act.start.TimeOfDay > end.TimeOfDay)
+                    break;
+            }
+
+            //DELETE DEBUG
+            if (start.Hour >= 9 && start.Minute >= 6 && acts == "")
+            {
+                bool stop = true;
+            }
+
+            return new Tuple<string, string, string, String, String>(acts, children, teachers, nchildren, nteachers);
+        }
         public void readOnsetsAndActivity(String dir, String szOutputFile, int startHour, int endHour, int endMinute)//, ref ClassroomDay classroomDay)
         {
             String szDayFolder = Utilities.getDateDashStr(classDay);
@@ -1063,157 +1084,169 @@ namespace UL_Processor_V2020
             {
                 foreach (String szBubject in act.szChildren.Split('|'))
                 {
-                  
+
                     foreach (String szLenaSubject in lenaOnsets.Keys)
                     {
-                        if(lenaOnsets[szLenaSubject].Count>0)
+                        if (lenaOnsets[szLenaSubject].Count > 0)
                         {
                             LenaOnset lo = lenaOnsets[szLenaSubject][0];
-                           // if(lo.id=="")
+                            // if(lo.id=="")
                         }
-                       // LenaOnset lo = lenaOnsets[szLenaSubject];
+                        // LenaOnset lo = lenaOnsets[szLenaSubject];
                     }
 
                 }
                 DateTime currentOnset = new DateTime(2000, 1, 1);
-                  
+
 
             }
             sw.Close();
         }
-                    public void readLenaItsAndGetOnsets(String dir,String szOutputFile, int startHour,int endHour, int endMinute )//, ref ClassroomDay classroomDay)
+        public void readLenaItsAndGetOnsets(String dir, String szOutputFile, int startHour, int endHour, int endMinute)//, ref ClassroomDay classroomDay)
+        {
+            String szDayFolder = Utilities.getDateDashStr(classDay);
+            TextWriter sw = new StreamWriter(szOutputFile);// countDays > 0);
+            sw.WriteLine("File,Date,Subject,LenaID,SubjectType,segmentid," +
+                "voctype,recstart,startsec,endsec,starttime,endtime,duration," +
+                "seg_duration,wordcount,avg_db,avg_peak,turn_taking," +
+                "logActivities,children,teachers");//,children,teachers");
+
+
+            string[] szLenaItsFiles = Directory.GetFiles(dir + "//" + szDayFolder + "//LENA_Data//ITS//", "*.its");
+            foreach (string itsFile in szLenaItsFiles)
+            {
+                String szLenaId = Utilities.getLenaIdFromFileName(Path.GetFileName(itsFile));
+                XmlDocument doc = new XmlDocument();
+                doc.Load(itsFile);
+                XmlNodeList rec = doc.ChildNodes[0].SelectNodes("ProcessingUnit/Recording");
+                foreach (XmlNode recording in rec)
+                {
+                    //DELETE DEBUG
+                    if (szLenaId == "29640")
                     {
-                        String szDayFolder = Utilities.getDateDashStr(classDay);
-                        TextWriter sw = new StreamWriter(szOutputFile);// countDays > 0);
-                        sw.WriteLine("File,Date,Subject,LenaID,SubjectType,segmentid," +
-                            "voctype,recstart,startsec,endsec,starttime,endtime,duration," +
-                            "seg_duration,wordcount,avg_db,avg_peak,turn_taking," +
-                            "logActivities,children,teachers");//,children,teachers");
+                        Boolean stop = true;
+                    }
+                    double recStartSecs = Convert.ToDouble(recording.Attributes["startTime"].Value.Substring(2, recording.Attributes["startTime"].Value.Length - 3));
+                    DateTime recStartTime = DateTime.Parse(recording.Attributes["startClockTime"].Value);
+                    XmlNodeList nodes = recording.SelectNodes("Conversation|Pause");
+                    PersonDayInfo pdi = getPersonInfoByLena(szLenaId);
+                    if (pdi.mapId != "")
+                    {
+                        Person pi = personBaseMappings[pdi.mapId];
 
+                        double segmentNumber = 0;
 
-                        string[] szLenaItsFiles = Directory.GetFiles(dir + "//"+szDayFolder+ "//LENA_Data//ITS//");
-                        foreach (string itsFile in szLenaItsFiles)
+                        if (Utilities.isSameDay(recStartTime, classDay) &&
+                                recStartTime.Hour >= startHour &&
+                                (recStartTime.Hour < endHour ||
+                                    (recStartTime.Hour == endHour &&
+                                        recStartTime.Minute <= endMinute
+                                    )
+                                )
+                            )
                         {
-                            String szLenaId = Utilities.getLenaIdFromFileName(Path.GetFileName(itsFile));
-                            XmlDocument doc = new XmlDocument();
-                            doc.Load(itsFile);
-                            XmlNodeList rec = doc.ChildNodes[0].SelectNodes("ProcessingUnit/Recording");
-                            foreach (XmlNode recording in rec)
+                            if (!subjectStartLena.ContainsKey(pdi.mapId))
                             {
-                                //DELETE DEBUG
-                                if(szLenaId== "29640")
+                                subjectStartLena.Add(pdi.mapId, recStartTime);
+                            }
+                            if (!subjectEndLena.ContainsKey(pdi.mapId))
+                            {
+                                subjectEndLena.Add(pdi.mapId, recStartTime);
+                            }
+                            foreach (XmlNode conv in nodes)
+                            {
+                                XmlNodeList segments = conv.SelectNodes("Segment");
+                                double startSecs = Convert.ToDouble(conv.Attributes["startTime"].Value.Substring(2, conv.Attributes["startTime"].Value.Length - 3)) - recStartSecs;
+                                double endSecs = Convert.ToDouble(conv.Attributes["endTime"].Value.Substring(2, conv.Attributes["endTime"].Value.Length - 3)) - recStartSecs;
+                                DateTime start = Utilities.geFullTime(recStartTime.AddSeconds(startSecs));
+                                DateTime end = Utilities.geFullTime(recStartTime.AddSeconds(endSecs));
+                                double dbAvg = Convert.ToDouble(conv.Attributes["average_dB"].Value);
+                                double dbPeak = Convert.ToDouble(conv.Attributes["peak_dB"].Value);
+                                double bd = (end - start).Seconds + ((end - start).Milliseconds > 0 ? ((end - start).Milliseconds / 1000.00) : 0.00); //endSecs - startSecs;
+                                if (Utilities.isSameDay(start, classDay) &&
+                                start.Hour >= startHour &&
+                                (start.Hour < endHour || (start.Hour == endHour && start.Minute <= endMinute)) &&
+                                start >= pdi.startDate &&
+                                start <= pdi.endDate)
                                 {
-                                    Boolean stop = true;
-                                }
-                                double recStartSecs = Convert.ToDouble(recording.Attributes["startTime"].Value.Substring(2, recording.Attributes["startTime"].Value.Length - 3));
-                                DateTime recStartTime = DateTime.Parse(recording.Attributes["startClockTime"].Value);
-                                XmlNodeList nodes = recording.SelectNodes("Conversation|Pause");
-                                PersonDayInfo pdi = getPersonInfoByLena(szLenaId);
-                                if (pdi.mapId != "")
-                                {
-                                    Person pi = personBaseMappings[pdi.mapId];
+                                    if (conv.Name == "Conversation")
+                                    {
+                                        double tc = Convert.ToDouble(conv.Attributes["turnTaking"].Value);
 
-                                    double segmentNumber = 0;
-
-                                    if (    Utilities.isSameDay(recStartTime, classDay) &&
-                                            recStartTime.Hour >= startHour &&
-                                            (   recStartTime.Hour < endHour ||
-                                                (   recStartTime.Hour == endHour && 
-                                                    recStartTime.Minute <= endMinute
-                                                )
-                                            )
-                                        )
-                                        foreach (XmlNode conv in nodes)
+                                        if (tc > 0)
                                         {
-                                            XmlNodeList segments = conv.SelectNodes("Segment");
-                                            double startSecs = Convert.ToDouble(conv.Attributes["startTime"].Value.Substring(2, conv.Attributes["startTime"].Value.Length - 3)) - recStartSecs;
-                                            double endSecs = Convert.ToDouble(conv.Attributes["endTime"].Value.Substring(2, conv.Attributes["endTime"].Value.Length - 3)) - recStartSecs;
-                                            DateTime start = Utilities.geFullTime(recStartTime.AddSeconds(startSecs));
-                                            DateTime end = Utilities.geFullTime(recStartTime.AddSeconds(endSecs));
-                                            double dbAvg = Convert.ToDouble(conv.Attributes["average_dB"].Value);
-                                            double dbPeak = Convert.ToDouble(conv.Attributes["peak_dB"].Value);
-                                            double bd = (end - start).Seconds + ((end - start).Milliseconds > 0 ? ((end - start).Milliseconds / 1000.00) : 0.00); //endSecs - startSecs;
-                                            if (Utilities.isSameDay(start, classDay) &&
-                                            start.Hour >= startHour &&
-                                            (start.Hour < endHour || (start.Hour == endHour && start.Minute <= endMinute)) &&
-                                            start>=pdi.startDate &&
-                                            start<=pdi.endDate)
-                                            { 
-                                                if (conv.Name == "Conversation")
-                                                { 
-                                                    double tc = Convert.ToDouble(conv.Attributes["turnTaking"].Value);
+                                            // DEBUG DELETE Tuple<String, String, String> logActs = getLogActivities(start, end, false, "");
+                                            if (start.Month == 1 && start.Year == 2019 && start.Day == 23 && start.Hour == 9 && (start.Minute == 0 || start.Minute == 1))
+                                            {
+                                                Boolean stop = true;
+                                            }
 
-                                                    if (tc > 0)
-                                                    {
-                                                        // DEBUG DELETE Tuple<String, String, String> logActs = getLogActivities(start, end, false, "");
-                                                        if (start.Month==1 && start.Year==2019 && start.Day==23 && start.Hour==9 && (start.Minute==0 || start.Minute==1))
-                                                        {
-                                                            Boolean stop = true;
-                                                        }
-
-                                                        Tuple<String, String, String, String, String> logActs = getLogActivities(start, end, true, Utilities.getNumberIdFromPerson(pi));
-                                                        sw.WriteLine(Path.GetFileName(itsFile) + "," +
-                                                                                        classDay + "," +
-                                                                                        pi.shortId + "," +
-                                                                                        pdi.lenaId + "," +
-                                                                                        pi.subjectType + "," +
-                                                                                        segmentNumber +
-                                                                                        ",Conversation_turnTaking," +
-                                                                                        Utilities.getTimeStr(recStartTime) + "," +
-                                                                                        startSecs + "," +
-                                                                                        endSecs + "," +
-                                                                                        Utilities.getTimeStr(start) + "," +
-                                                                                        Utilities.getTimeStr(end) + "," +
-                                                                                        String.Format("{0:0.00}", 0) + "," +
-                                                                                        String.Format("{0:0.00}", bd) + "," +
-                                                                                        "," +
-                                                                                        String.Format("{0:0.00}", dbAvg) + "," +
-                                                                                        String.Format("{0:0.00}", dbPeak) + "," +
-                                                                                        String.Format("{0:0.00}", tc) + "," +
-                                                                                        logActs.Item1  +","+
-                                                                                        logActs.Item4 + "," +
-                                                                                        logActs.Item5);
-//sw.WriteLine("File,Date,Subject,LenaID,SubjectType,segmentid,voctype,recstart,startsec,endsec,starttime,endtime,duration,seg_duration,count,avg_db,avg_peak,turn_taking ");
+                                            Tuple<String, String, String, String, String> logActs = getLogActivities(start, end, true, Utilities.getNumberIdFromPerson(pi));
+                                            sw.WriteLine(Path.GetFileName(itsFile) + "," +
+                                                                            classDay + "," +
+                                                                            pi.shortId + "," +
+                                                                            pdi.lenaId + "," +
+                                                                            pi.subjectType + "," +
+                                                                            segmentNumber +
+                                                                            ",Conversation_turnTaking," +
+                                                                            Utilities.getTimeStr(recStartTime) + "," +
+                                                                            startSecs + "," +
+                                                                            endSecs + "," +
+                                                                            Utilities.getTimeStr(start) + "," +
+                                                                            Utilities.getTimeStr(end) + "," +
+                                                                            String.Format("{0:0.00}", 0) + "," +
+                                                                            String.Format("{0:0.00}", bd) + "," +
+                                                                            "," +
+                                                                            String.Format("{0:0.00}", dbAvg) + "," +
+                                                                            String.Format("{0:0.00}", dbPeak) + "," +
+                                                                            String.Format("{0:0.00}", tc) + "," +
+                                                                            logActs.Item1 + "," +
+                                                                            logActs.Item4 + "," +
+                                                                            logActs.Item5);
+                                            //sw.WriteLine("File,Date,Subject,LenaID,SubjectType,segmentid,voctype,recstart,startsec,endsec,starttime,endtime,duration,seg_duration,count,avg_db,avg_peak,turn_taking ");
                                             LenaOnset lenaOnset = new LenaOnset();
                                             lenaOnset.itsFile = itsFile;
                                             lenaOnset.lenaId = pdi.lenaId;
-                                            lenaOnset.segmentId = segmentNumber.ToString() ;
+                                            lenaOnset.segmentId = segmentNumber.ToString();
                                             lenaOnset.recStartTime = recStartTime;
                                             lenaOnset.startSec = startSecs;
                                             lenaOnset.endSec = endSecs;
                                             lenaOnset.segmentDurSecs = 0;
-                                                        lenaOnset.id = pi.mapId;
-                                                        lenaOnset.type = "Conversation_turnTaking";
-                                                        lenaOnset.durSecs = bd;
-                                                        lenaOnset.tc = tc;
-                                                        lenaOnset.startTime = start;
-                                                        lenaOnset.parentStartTime = start;
-                                                        lenaOnset.endTime = end;
-                                                        lenaOnset.avgDb = dbAvg;
-                                                        lenaOnset.peakDb = dbPeak;
+                                            lenaOnset.id = pi.mapId;
+                                            lenaOnset.type = "Conversation_turnTaking";
+                                            lenaOnset.durSecs = bd;
+                                            lenaOnset.tc = tc;
+                                            lenaOnset.startTime = start;
+                                            lenaOnset.parentStartTime = start;
+                                            lenaOnset.endTime = end;
+                                            lenaOnset.avgDb = dbAvg;
+                                            lenaOnset.peakDb = dbPeak;
                                             lenaOnset.subjectType = pi.subjectType;
-                                                        if (!lenaOnsets.ContainsKey(lenaOnset.id))
-                                                            lenaOnsets.Add(lenaOnset.id, new List<LenaOnset>());
-                                                        lenaOnsets[lenaOnset.id].Add(lenaOnset);
+                                            if (!lenaOnsets.ContainsKey(lenaOnset.id))
+                                                lenaOnsets.Add(lenaOnset.id, new List<LenaOnset>());
+                                            lenaOnsets[lenaOnset.id].Add(lenaOnset);
 
-                                                    }
+                                        }
 
-                                                }
+                                    }
 
-                                             
-                                            foreach (XmlNode seg in segments)
-                                            {
-                                                segmentNumber++;
-                                                startSecs = Convert.ToDouble(seg.Attributes["startTime"].Value.Substring(2, seg.Attributes["startTime"].Value.Length - 3)) - recStartSecs;
-                                                endSecs = Convert.ToDouble(seg.Attributes["endTime"].Value.Substring(2, seg.Attributes["endTime"].Value.Length - 3)) - recStartSecs;
-                                                start = Utilities.geFullTime(recStartTime.AddMilliseconds(startSecs * 1000));
-                                                end = Utilities.geFullTime(recStartTime.AddMilliseconds(endSecs * 1000));
-                                                bd = (end - start).Seconds + ((end - start).Milliseconds > 0 ? ((end - start).Milliseconds / 1000.00) : 0); //endSecs - startSecs;
-                                                dbAvg = Convert.ToDouble(seg.Attributes["average_dB"].Value);
-                                                dbPeak = Convert.ToDouble(seg.Attributes["peak_dB"].Value);
-                                                String speaker = seg.Attributes["spkr"].Value;
 
-                                                LenaOnset lenaSegmentOnset = new LenaOnset();
+                                    foreach (XmlNode seg in segments)
+                                    {
+                                        segmentNumber++;
+                                        startSecs = Convert.ToDouble(seg.Attributes["startTime"].Value.Substring(2, seg.Attributes["startTime"].Value.Length - 3)) - recStartSecs;
+                                        endSecs = Convert.ToDouble(seg.Attributes["endTime"].Value.Substring(2, seg.Attributes["endTime"].Value.Length - 3)) - recStartSecs;
+                                        start = Utilities.geFullTime(recStartTime.AddMilliseconds(startSecs * 1000));
+                                        end = Utilities.geFullTime(recStartTime.AddMilliseconds(endSecs * 1000));
+
+                                        subjectEndLena[pdi.mapId] = end;
+
+                                        bd = (end - start).Seconds + ((end - start).Milliseconds > 0 ? ((end - start).Milliseconds / 1000.00) : 0); //endSecs - startSecs;
+                                        dbAvg = Convert.ToDouble(seg.Attributes["average_dB"].Value);
+                                        dbPeak = Convert.ToDouble(seg.Attributes["peak_dB"].Value);
+                                        String speaker = seg.Attributes["spkr"].Value;
+
+                                        LenaOnset lenaSegmentOnset = new LenaOnset();
                                         lenaSegmentOnset.itsFile = itsFile;
                                         lenaSegmentOnset.lenaId = pdi.lenaId;
                                         lenaSegmentOnset.segmentId = segmentNumber.ToString();
@@ -1221,58 +1254,58 @@ namespace UL_Processor_V2020
                                         lenaSegmentOnset.startSec = startSecs;
                                         lenaSegmentOnset.endSec = endSecs;
                                         lenaSegmentOnset.id = pi.mapId;
-                                                lenaSegmentOnset.startTime = start;
+                                        lenaSegmentOnset.startTime = start;
+                                        lenaSegmentOnset.parentStartTime = lenaSegmentOnset.startTime;
+                                        lenaSegmentOnset.endTime = end;
+                                        lenaSegmentOnset.segmentDurSecs = bd;
+                                        lenaSegmentOnset.avgDb = dbAvg;
+                                        lenaSegmentOnset.peakDb = dbPeak;
+                                        lenaSegmentOnset.subjectType = pi.subjectType;
+                                        Tuple<String, String, String, String, String> logActs = getLogActivities(start, end, true, Utilities.getNumberIdFromPerson(pi));
+                                        if (logActs.Item1 != "" && logActs.Item4 == "")
+                                        {
+                                            Boolean t = true;
+                                        }
+
+
+                                        switch (speaker)
+                                        {
+                                            case "CHN":
+                                            case "CHF":
+
+
+                                                double pivd = Convert.ToDouble(seg.Attributes["childUttLen"].Value.Substring(1, seg.Attributes["childUttLen"].Value.Length - 2));
+                                                double pivc = Convert.ToDouble(seg.Attributes["childUttCnt"].Value);
+                                                //sw.WriteLine("File,Date,Subject,LenaID,SubjectType,segmentid,voctype,recstart,startsec,endsec,starttime,endtime,duration,
+                                                //seg_duration,wordcount,avg_db,avg_peak,turn_taking ");
+                                                sw.WriteLine(Path.GetFileName(itsFile) + "," +
+                                                                        classDay + "," +
+                                                                        pi.shortId + "," +
+                                                                        pdi.lenaId + "," +
+                                                                        pi.subjectType + "," +
+                                                                        segmentNumber +
+                                                                        ",CHN_CHF SegmentUttCount," +
+                                                                        Utilities.getTimeStr(recStartTime) + "," +
+                                                                        startSecs + "," +
+                                                                        endSecs + "," +
+                                                                        Utilities.getTimeStr(start) + "," +
+                                                                        Utilities.getTimeStr(end) + "," +
+                                                                        String.Format("{0:0.00}", pivd) + "," +
+                                                                        String.Format("{0:0.00}", bd) + "," +
+                                                                        "," +
+                                                                        String.Format("{0:0.00}", dbAvg) + "," +
+                                                                        String.Format("{0:0.00}", dbPeak) + "," + "," +
+                                                                                logActs.Item1 + "," +
+                                                                                logActs.Item4 + "," +
+                                                                                logActs.Item5);
+
+                                                lenaSegmentOnset.type = "CHN_CHF SegmentUttCount";
+                                                lenaSegmentOnset.durSecs = pivd;
                                                 lenaSegmentOnset.parentStartTime = lenaSegmentOnset.startTime;
-                                                lenaSegmentOnset.endTime = end;
-                                                lenaSegmentOnset.segmentDurSecs = bd;
-                                                lenaSegmentOnset.avgDb = dbAvg;
-                                                lenaSegmentOnset.peakDb = dbPeak;
-                                                lenaSegmentOnset.subjectType = pi.subjectType;
-                                                Tuple<String, String, String, String, String> logActs = getLogActivities(start, end, true, Utilities.getNumberIdFromPerson(pi));
-                                                    if (logActs.Item1 != "" && logActs.Item4 == "")
-                                                    {
-                                                        Boolean t = true;
-                                                    }
-
-
-                                                switch (speaker)
-                                                {
-                                                    case "CHN":
-                                                    case "CHF":
-
-
-                                                            double pivd = Convert.ToDouble(seg.Attributes["childUttLen"].Value.Substring(1, seg.Attributes["childUttLen"].Value.Length - 2));
-                                                        double pivc = Convert.ToDouble(seg.Attributes["childUttCnt"].Value);
-                                                        //sw.WriteLine("File,Date,Subject,LenaID,SubjectType,segmentid,voctype,recstart,startsec,endsec,starttime,endtime,duration,
-                                                        //seg_duration,wordcount,avg_db,avg_peak,turn_taking ");
-                                                        sw.WriteLine(Path.GetFileName(itsFile) + "," +
-                                                                                classDay + "," +
-                                                                                pi.shortId + "," +
-                                                                                pdi.lenaId + "," +
-                                                                                pi.subjectType + "," +
-                                                                                segmentNumber +
-                                                                                ",CHN_CHF SegmentUttCount," +
-                                                                                Utilities.getTimeStr(recStartTime) + "," +
-                                                                                startSecs + "," +
-                                                                                endSecs + "," +
-                                                                                Utilities.getTimeStr(start) + "," +
-                                                                                Utilities.getTimeStr(end) + "," +
-                                                                                String.Format("{0:0.00}", pivd) + "," +
-                                                                                String.Format("{0:0.00}", bd) + "," +
-                                                                                "," +
-                                                                                String.Format("{0:0.00}", dbAvg) + "," +
-                                                                                String.Format("{0:0.00}", dbPeak) + "," + "," +
-                                                                                        logActs.Item1 +","+
-                                                                                        logActs.Item4 + "," +
-                                                                                        logActs.Item5); 
-
-                                                        lenaSegmentOnset.type = "CHN_CHF SegmentUttCount";
-                                                        lenaSegmentOnset.durSecs = pivd;
-                                                        lenaSegmentOnset.parentStartTime = lenaSegmentOnset.startTime;
-                                                        lenaSegmentOnset.count = pivc;
-                                                        if (!lenaOnsets.ContainsKey(lenaSegmentOnset.id))
-                                                            lenaOnsets.Add(lenaSegmentOnset.id, new List<LenaOnset>());
-                                                        lenaOnsets[lenaSegmentOnset.id].Add(lenaSegmentOnset);
+                                                lenaSegmentOnset.count = pivc;
+                                                if (!lenaOnsets.ContainsKey(lenaSegmentOnset.id))
+                                                    lenaOnsets.Add(lenaSegmentOnset.id, new List<LenaOnset>());
+                                                lenaOnsets[lenaSegmentOnset.id].Add(lenaSegmentOnset);
 
                                                 personDayMappings[pi.mapId].totalLenaVars.avgDb += dbAvg;
                                                 personDayMappings[pi.mapId].totalLenaVars.maxDb += dbPeak;
@@ -1280,164 +1313,164 @@ namespace UL_Processor_V2020
 
 
                                                 foreach (XmlAttribute atts in seg.Attributes)
-                                                        {
-                                                            if (atts.Name.IndexOf("startCry") == 0)
-                                                            {
-                                                                String attStep = atts.Name.Substring(8);
-                                                                String att = atts.Name;
-                                                                double astartSecs = Convert.ToDouble(seg.Attributes[att].Value.Substring(2, seg.Attributes[att].Value.Length - 3)) - recStartSecs;
-                                                                double aendSecs = Convert.ToDouble(seg.Attributes["endCry" + attStep].Value.Substring(2, seg.Attributes["endCry" + attStep].Value.Length - 3)) - recStartSecs;
-                                                                DateTime astart = Utilities.geFullTime(recStartTime.AddMilliseconds(astartSecs * 1000));
-                                                                DateTime aend = Utilities.geFullTime(recStartTime.AddMilliseconds(aendSecs * 1000));
-                                                                double apicry = (aend - astart).Seconds + ((aend - astart).Milliseconds > 0 ? (aend - astart).Milliseconds / 1000.00 : 0); //cendSecs - cstartSecs;
-                                                                Tuple<String, String, String, String, String> logCryActs = getLogActivities(astart, aend, true, Utilities.getNumberIdFromPerson(pi));
-
-                                                                    sw.WriteLine(Path.GetFileName(itsFile) + "," +
-                                                                                classDay + "," +
-                                                                                pi.shortId + "," +
-                                                                                pdi.lenaId + "," +
-                                                                                pi.subjectType + "," +
-                                                                                segmentNumber +
-                                                                                ",CHN_CHF CryDur," +
-                                                                                Utilities.getTimeStr(recStartTime) + "," +
-                                                                                astartSecs + "," +
-                                                                                aendSecs + "," +
-                                                                                Utilities.getTimeStr(astart) + "," +
-                                                                                Utilities.getTimeStr(aend) + "," +
-                                                                                String.Format("{0:0.00}", apicry) + "," +
-                                                                                String.Format("{0:0.00}", bd) + "," +
-                                                                                "," +
-                                                                                "," +
-                                                                                "," + "," +
-                                                                                        logCryActs.Item1  +","+
-                                                                                        logCryActs.Item4 + "," +
-                                                                                        logCryActs.Item5); //String.Format("{0:0.00}", dbPeak) + ",");
-
-
-
-
-                                                                    LenaOnset lenaAttOnset = new LenaOnset();
-                                                        lenaAttOnset.itsFile = itsFile;
-                                                        lenaAttOnset.lenaId = pdi.lenaId;
-                                                        lenaAttOnset.segmentId = segmentNumber.ToString();
-                                                        lenaAttOnset.recStartTime = recStartTime;
-                                                        lenaAttOnset.startSec = astartSecs;
-                                                        lenaAttOnset.endSec = aendSecs;
-                                                        lenaAttOnset.id = pi.mapId;
-                                                                lenaAttOnset.startTime = astart;
-                                                                lenaAttOnset.endTime = aend;
-                                                                lenaAttOnset.segmentDurSecs = bd;
-                                                                lenaAttOnset.avgDb = dbAvg;
-                                                                lenaAttOnset.peakDb = dbPeak;
-                                                                lenaAttOnset.type = "CHN_CHF CryDur";
-                                                                lenaAttOnset.durSecs = apicry;
-                                                                lenaAttOnset.count = 0;
-                                                        lenaAttOnset.parentStartTime = lenaSegmentOnset.startTime;
-
-                                                        lenaAttOnset.subjectType = pi.subjectType;
-                                                        if (!lenaOnsets.ContainsKey(lenaAttOnset.id))
-                                                                    lenaOnsets.Add(lenaAttOnset.id, new List<LenaOnset>());
-                                                                lenaOnsets[lenaAttOnset.id].Add(lenaAttOnset);
-
-                                                            }
-                                                            else if (atts.Name.IndexOf("startUtt") == 0)
-                                                            {
-                                                                String attStep = atts.Name.Substring(8);
-                                                                String att = atts.Name;
-                                                                double astartSecs = Convert.ToDouble(seg.Attributes[att].Value.Substring(2, seg.Attributes[att].Value.Length - 3)) - recStartSecs;
-                                                                double aendSecs = Convert.ToDouble(seg.Attributes["endUtt" + attStep].Value.Substring(2, seg.Attributes["endUtt" + attStep].Value.Length - 3)) - recStartSecs;
-                                                                DateTime astart = Utilities.geFullTime(recStartTime.AddMilliseconds(astartSecs * 1000));
-                                                                DateTime aend = Utilities.geFullTime(recStartTime.AddMilliseconds(aendSecs * 1000));
-                                                                double apiutts = (aend - astart).Seconds + ((aend - astart).Milliseconds > 0 ? (aend - astart).Milliseconds / 1000.00 : 0); //cendSecs - cstartSecs;
-                                                                Tuple<String, String, String, String, String> logUttActs = getLogActivities(astart, aend, true, Utilities.getNumberIdFromPerson(pi));
-                                                                    sw.WriteLine(Path.GetFileName(itsFile) + "," +
-                                                                                classDay + "," +
-                                                                                pi.shortId + "," +
-                                                                                pdi.lenaId + "," +
-                                                                                pi.subjectType + "," +
-                                                                                segmentNumber +
-                                                                                ",CHN_CHF UttDur," +
-                                                                                Utilities.getTimeStr(recStartTime) + "," +
-                                                                                astartSecs + "," +
-                                                                                aendSecs + "," +
-                                                                                Utilities.getTimeStr(astart) + "," +
-                                                                                Utilities.getTimeStr(aend) + "," +
-                                                                                String.Format("{0:0.00}", apiutts) + "," +
-                                                                                String.Format("{0:0.00}", bd) + "," +
-                                                                                "," +
-                                                                                "," +
-                                                                                "," + "," +
-                                                                                        logUttActs.Item1  +","+
-                                                                                        logUttActs.Item4 + "," +
-                                                                                        logUttActs.Item5);   //String.Format("{0:0.00}", dbPeak) + ",");
-
-                                                                    LenaOnset lenaAttOnset = new LenaOnset();
-                                                        lenaAttOnset.itsFile = itsFile;
-                                                        lenaAttOnset.lenaId = pdi.lenaId;
-                                                        lenaAttOnset.segmentId = segmentNumber.ToString();
-                                                        lenaAttOnset.recStartTime = recStartTime;
-                                                        lenaAttOnset.startSec = astartSecs;
-                                                        lenaAttOnset.endSec = aendSecs;
-
-                                                        lenaAttOnset.id = pi.mapId;
-                                                                lenaAttOnset.startTime = astart;
-                                                                lenaAttOnset.endTime = aend;
-                                                                lenaAttOnset.segmentDurSecs = bd;
-                                                                lenaAttOnset.avgDb = dbAvg;
-                                                                lenaAttOnset.peakDb = dbPeak;
-                                                                lenaAttOnset.type = "CHN_CHF UttDur";
-                                                                lenaAttOnset.durSecs = apiutts;
-                                                                lenaAttOnset.count = 0;
-                                                        lenaAttOnset.parentStartTime = lenaSegmentOnset.startTime;
-
-                                                        lenaAttOnset.subjectType = pi.subjectType;
-                                                        if (!lenaOnsets.ContainsKey(lenaAttOnset.id))
-                                                                    lenaOnsets.Add(lenaAttOnset.id, new List<LenaOnset>());
-                                                                lenaOnsets[lenaAttOnset.id].Add(lenaAttOnset);
-                                                            }
-                                                        }
-                                                        break;
-                                                    case "FAN":
-                                                    case "MAN":
-                                                        Boolean isFemale = speaker == "FAN";
-                                                        double piac = isFemale ? Convert.ToDouble(seg.Attributes["femaleAdultWordCnt"].Value) : Convert.ToDouble(seg.Attributes["maleAdultWordCnt"].Value);
-                                                        double piad = isFemale ? Convert.ToDouble(seg.Attributes["femaleAdultUttLen"].Value.Substring(1, seg.Attributes["femaleAdultUttLen"].Value.Length - 2)) : Convert.ToDouble(seg.Attributes["maleAdultUttLen"].Value.Substring(1, seg.Attributes["maleAdultUttLen"].Value.Length - 2));
-                                                        piad = bd;
+                                                {
+                                                    if (atts.Name.IndexOf("startCry") == 0)
+                                                    {
+                                                        String attStep = atts.Name.Substring(8);
+                                                        String att = atts.Name;
+                                                        double astartSecs = Convert.ToDouble(seg.Attributes[att].Value.Substring(2, seg.Attributes[att].Value.Length - 3)) - recStartSecs;
+                                                        double aendSecs = Convert.ToDouble(seg.Attributes["endCry" + attStep].Value.Substring(2, seg.Attributes["endCry" + attStep].Value.Length - 3)) - recStartSecs;
+                                                        DateTime astart = Utilities.geFullTime(recStartTime.AddMilliseconds(astartSecs * 1000));
+                                                        DateTime aend = Utilities.geFullTime(recStartTime.AddMilliseconds(aendSecs * 1000));
+                                                        double apicry = (aend - astart).Seconds + ((aend - astart).Milliseconds > 0 ? (aend - astart).Milliseconds / 1000.00 : 0); //cendSecs - cstartSecs;
+                                                        Tuple<String, String, String, String, String> logCryActs = getLogActivities(astart, aend, true, Utilities.getNumberIdFromPerson(pi));
 
                                                         sw.WriteLine(Path.GetFileName(itsFile) + "," +
-                                                                            classDay + "," +
-                                                                            pi.shortId + "," +
-                                                                            pdi.lenaId + "," +
-                                                                            pi.subjectType + "," +
-                                                                            segmentNumber +
-                                                                            (isFemale ? ",FAN SegmentUtt," : ",MAN SegmentUtt,") +
-                                                                            Utilities.getTimeStr(recStartTime) + "," +
-                                                                            startSecs + "," +
-                                                                            endSecs + "," +
-                                                                            Utilities.getTimeStr(start) + "," +
-                                                                            Utilities.getTimeStr(end) + "," +
-                                                                            String.Format("{0:0.00}", piad) + "," +
-                                                                            String.Format("{0:0.00}", bd) + "," +
-                                                                            String.Format("{0:0.00}", piac) + "," +
-                                                                            String.Format("{0:0.00}", dbAvg) + "," +
-                                                                            String.Format("{0:0.00}", dbPeak) + "," + "," +
-                                                                                        logActs.Item1 +","+
-                                                                                        logActs.Item4 + "," +
-                                                                                        logActs.Item5); 
-
-                                                            lenaSegmentOnset.type = (isFemale ? "FAN SegmentUtt" : "MAN SegmentUtt");
-                                                        lenaSegmentOnset.durSecs = piad;
-                                                        lenaSegmentOnset.count = piac;
-                                                        if (!lenaOnsets.ContainsKey(lenaSegmentOnset.id))
-                                                            lenaOnsets.Add(lenaSegmentOnset.id, new List<LenaOnset>());
-                                                        lenaOnsets[lenaSegmentOnset.id].Add(lenaSegmentOnset);
+                                                                    classDay + "," +
+                                                                    pi.shortId + "," +
+                                                                    pdi.lenaId + "," +
+                                                                    pi.subjectType + "," +
+                                                                    segmentNumber +
+                                                                    ",CHN_CHF CryDur," +
+                                                                    Utilities.getTimeStr(recStartTime) + "," +
+                                                                    astartSecs + "," +
+                                                                    aendSecs + "," +
+                                                                    Utilities.getTimeStr(astart) + "," +
+                                                                    Utilities.getTimeStr(aend) + "," +
+                                                                    String.Format("{0:0.00}", apicry) + "," +
+                                                                    String.Format("{0:0.00}", bd) + "," +
+                                                                    "," +
+                                                                    "," +
+                                                                    "," + "," +
+                                                                            logCryActs.Item1 + "," +
+                                                                            logCryActs.Item4 + "," +
+                                                                            logCryActs.Item5); //String.Format("{0:0.00}", dbPeak) + ",");
 
 
-                                                        break;
 
 
-                                                    case "CXN":
-                                                    case "CXF":
+                                                        LenaOnset lenaAttOnset = new LenaOnset();
+                                                        lenaAttOnset.itsFile = itsFile;
+                                                        lenaAttOnset.lenaId = pdi.lenaId;
+                                                        lenaAttOnset.segmentId = segmentNumber.ToString();
+                                                        lenaAttOnset.recStartTime = recStartTime;
+                                                        lenaAttOnset.startSec = astartSecs;
+                                                        lenaAttOnset.endSec = aendSecs;
+                                                        lenaAttOnset.id = pi.mapId;
+                                                        lenaAttOnset.startTime = astart;
+                                                        lenaAttOnset.endTime = aend;
+                                                        lenaAttOnset.segmentDurSecs = bd;
+                                                        lenaAttOnset.avgDb = dbAvg;
+                                                        lenaAttOnset.peakDb = dbPeak;
+                                                        lenaAttOnset.type = "CHN_CHF CryDur";
+                                                        lenaAttOnset.durSecs = apicry;
+                                                        lenaAttOnset.count = 0;
+                                                        lenaAttOnset.parentStartTime = lenaSegmentOnset.startTime;
+
+                                                        lenaAttOnset.subjectType = pi.subjectType;
+                                                        if (!lenaOnsets.ContainsKey(lenaAttOnset.id))
+                                                            lenaOnsets.Add(lenaAttOnset.id, new List<LenaOnset>());
+                                                        lenaOnsets[lenaAttOnset.id].Add(lenaAttOnset);
+
+                                                    }
+                                                    else if (atts.Name.IndexOf("startUtt") == 0)
+                                                    {
+                                                        String attStep = atts.Name.Substring(8);
+                                                        String att = atts.Name;
+                                                        double astartSecs = Convert.ToDouble(seg.Attributes[att].Value.Substring(2, seg.Attributes[att].Value.Length - 3)) - recStartSecs;
+                                                        double aendSecs = Convert.ToDouble(seg.Attributes["endUtt" + attStep].Value.Substring(2, seg.Attributes["endUtt" + attStep].Value.Length - 3)) - recStartSecs;
+                                                        DateTime astart = Utilities.geFullTime(recStartTime.AddMilliseconds(astartSecs * 1000));
+                                                        DateTime aend = Utilities.geFullTime(recStartTime.AddMilliseconds(aendSecs * 1000));
+                                                        double apiutts = (aend - astart).Seconds + ((aend - astart).Milliseconds > 0 ? (aend - astart).Milliseconds / 1000.00 : 0); //cendSecs - cstartSecs;
+                                                        Tuple<String, String, String, String, String> logUttActs = getLogActivities(astart, aend, true, Utilities.getNumberIdFromPerson(pi));
+                                                        sw.WriteLine(Path.GetFileName(itsFile) + "," +
+                                                                    classDay + "," +
+                                                                    pi.shortId + "," +
+                                                                    pdi.lenaId + "," +
+                                                                    pi.subjectType + "," +
+                                                                    segmentNumber +
+                                                                    ",CHN_CHF UttDur," +
+                                                                    Utilities.getTimeStr(recStartTime) + "," +
+                                                                    astartSecs + "," +
+                                                                    aendSecs + "," +
+                                                                    Utilities.getTimeStr(astart) + "," +
+                                                                    Utilities.getTimeStr(aend) + "," +
+                                                                    String.Format("{0:0.00}", apiutts) + "," +
+                                                                    String.Format("{0:0.00}", bd) + "," +
+                                                                    "," +
+                                                                    "," +
+                                                                    "," + "," +
+                                                                            logUttActs.Item1 + "," +
+                                                                            logUttActs.Item4 + "," +
+                                                                            logUttActs.Item5);   //String.Format("{0:0.00}", dbPeak) + ",");
+
+                                                        LenaOnset lenaAttOnset = new LenaOnset();
+                                                        lenaAttOnset.itsFile = itsFile;
+                                                        lenaAttOnset.lenaId = pdi.lenaId;
+                                                        lenaAttOnset.segmentId = segmentNumber.ToString();
+                                                        lenaAttOnset.recStartTime = recStartTime;
+                                                        lenaAttOnset.startSec = astartSecs;
+                                                        lenaAttOnset.endSec = aendSecs;
+
+                                                        lenaAttOnset.id = pi.mapId;
+                                                        lenaAttOnset.startTime = astart;
+                                                        lenaAttOnset.endTime = aend;
+                                                        lenaAttOnset.segmentDurSecs = bd;
+                                                        lenaAttOnset.avgDb = dbAvg;
+                                                        lenaAttOnset.peakDb = dbPeak;
+                                                        lenaAttOnset.type = "CHN_CHF UttDur";
+                                                        lenaAttOnset.durSecs = apiutts;
+                                                        lenaAttOnset.count = 0;
+                                                        lenaAttOnset.parentStartTime = lenaSegmentOnset.startTime;
+
+                                                        lenaAttOnset.subjectType = pi.subjectType;
+                                                        if (!lenaOnsets.ContainsKey(lenaAttOnset.id))
+                                                            lenaOnsets.Add(lenaAttOnset.id, new List<LenaOnset>());
+                                                        lenaOnsets[lenaAttOnset.id].Add(lenaAttOnset);
+                                                    }
+                                                }
+                                                break;
+                                            case "FAN":
+                                            case "MAN":
+                                                Boolean isFemale = speaker == "FAN";
+                                                double piac = isFemale ? Convert.ToDouble(seg.Attributes["femaleAdultWordCnt"].Value) : Convert.ToDouble(seg.Attributes["maleAdultWordCnt"].Value);
+                                                double piad = isFemale ? Convert.ToDouble(seg.Attributes["femaleAdultUttLen"].Value.Substring(1, seg.Attributes["femaleAdultUttLen"].Value.Length - 2)) : Convert.ToDouble(seg.Attributes["maleAdultUttLen"].Value.Substring(1, seg.Attributes["maleAdultUttLen"].Value.Length - 2));
+                                                piad = bd;
+
+                                                sw.WriteLine(Path.GetFileName(itsFile) + "," +
+                                                                    classDay + "," +
+                                                                    pi.shortId + "," +
+                                                                    pdi.lenaId + "," +
+                                                                    pi.subjectType + "," +
+                                                                    segmentNumber +
+                                                                    (isFemale ? ",FAN SegmentUtt," : ",MAN SegmentUtt,") +
+                                                                    Utilities.getTimeStr(recStartTime) + "," +
+                                                                    startSecs + "," +
+                                                                    endSecs + "," +
+                                                                    Utilities.getTimeStr(start) + "," +
+                                                                    Utilities.getTimeStr(end) + "," +
+                                                                    String.Format("{0:0.00}", piad) + "," +
+                                                                    String.Format("{0:0.00}", bd) + "," +
+                                                                    String.Format("{0:0.00}", piac) + "," +
+                                                                    String.Format("{0:0.00}", dbAvg) + "," +
+                                                                    String.Format("{0:0.00}", dbPeak) + "," + "," +
+                                                                                logActs.Item1 + "," +
+                                                                                logActs.Item4 + "," +
+                                                                                logActs.Item5);
+
+                                                lenaSegmentOnset.type = (isFemale ? "FAN SegmentUtt" : "MAN SegmentUtt");
+                                                lenaSegmentOnset.durSecs = piad;
+                                                lenaSegmentOnset.count = piac;
+                                                if (!lenaOnsets.ContainsKey(lenaSegmentOnset.id))
+                                                    lenaOnsets.Add(lenaSegmentOnset.id, new List<LenaOnset>());
+                                                lenaOnsets[lenaSegmentOnset.id].Add(lenaSegmentOnset);
+
+
+                                                break;
+
+
+                                            case "CXN":
+                                            case "CXF":
                                                 sw.WriteLine(Path.GetFileName(itsFile) + "," +
                                                                      classDay + "," +
                                                                      pi.shortId + "," +
@@ -1529,26 +1562,26 @@ namespace UL_Processor_V2020
                                                 break;
 
                                             default:
-                                                             sw.WriteLine(Path.GetFileName(itsFile) + "," +
-                                                                                classDay + "," +
-                                                                                pi.shortId + "," +
-                                                                                pdi.lenaId + "," +
-                                                                                pi.subjectType + "," +
-                                                                                segmentNumber +","+
-                                                                                speaker+","+
-                                                                                Utilities.getTimeStr(recStartTime) + "," +
-                                                                                startSecs + "," +
-                                                                                endSecs + "," +
-                                                                                Utilities.getTimeStr(start) + "," +
-                                                                                Utilities.getTimeStr(end) + "," +
-                                                                                String.Format("{0:0.00}", bd) + "," +
-                                                                                String.Format("{0:0.00}", bd) + "," +
-                                                                                String.Format("{0:0.00}", 0) + "," +
-                                                                                String.Format("{0:0.00}", dbAvg) + "," +
-                                                                                String.Format("{0:0.00}", dbPeak) + "," + "," +
-                                                                                            logActs.Item1 + "," +
-                                                                                            logActs.Item4 + "," +
-                                                                                            logActs.Item5);
+                                                sw.WriteLine(Path.GetFileName(itsFile) + "," +
+                                                                   classDay + "," +
+                                                                   pi.shortId + "," +
+                                                                   pdi.lenaId + "," +
+                                                                   pi.subjectType + "," +
+                                                                   segmentNumber + "," +
+                                                                   speaker + "," +
+                                                                   Utilities.getTimeStr(recStartTime) + "," +
+                                                                   startSecs + "," +
+                                                                   endSecs + "," +
+                                                                   Utilities.getTimeStr(start) + "," +
+                                                                   Utilities.getTimeStr(end) + "," +
+                                                                   String.Format("{0:0.00}", bd) + "," +
+                                                                   String.Format("{0:0.00}", bd) + "," +
+                                                                   String.Format("{0:0.00}", 0) + "," +
+                                                                   String.Format("{0:0.00}", dbAvg) + "," +
+                                                                   String.Format("{0:0.00}", dbPeak) + "," + "," +
+                                                                               logActs.Item1 + "," +
+                                                                               logActs.Item4 + "," +
+                                                                               logActs.Item5);
 
 
                                                 lenaSegmentOnset.type = speaker;
@@ -1560,52 +1593,53 @@ namespace UL_Processor_V2020
                                                 break;
 
 
-                                                    }
-                                                }
                                         }
-                                            else
-                                            {
-                                                //DEBUG DELETE
-                                                Boolean stop = true;
-                                            }
-
-                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    //DEBUG DELETE
+                                    Boolean stop = true;
                                 }
 
                             }
-
                         }
-                        sw.Close();
-
                     }
 
-                    public PersonDayInfo getPersonInfoByLena(String lenaId)
-                    {
-                        foreach(PersonDayInfo pdi in personDayMappings.Values)
-                        {
-                            if(pdi.lenaId==lenaId && pdi.present && pdi.status == "PRESENT")
-                            {
-                                return pdi;
-                            }
-                        }
-                        return new PersonDayInfo();
-                    }
-                    public double linearInterpolate(DateTime t, DateTime t1, double y0, DateTime t2, double y1)
-                    {
-                        double x0 = t1.Minute * 60000 + t1.Second * 1000 + t1.Millisecond;
-                        double x1 = t2.Minute * 60000 + t2.Second * 1000 + t2.Millisecond;
-                        double x = t.Minute * 60000 + t.Second * 1000 + t.Millisecond;
-                        double lerp = (y0 * (x1 - x) + y1 * (x - x0)) / (x1 - x0);
-                        return lerp;
-                    }
-                    public Tuple<double, double> linearInterpolate(DateTime t, DateTime t1, double xa,  double ya , DateTime t2, double xb, double yb)
-                    {
-                        double x0 = t1.Minute * 60000 + t1.Second * 1000 + t1.Millisecond;
-                        double x1 = t2.Minute * 60000 + t2.Second * 1000 + t2.Millisecond;
-                        double x = t.Minute * 60000 + t.Second * 1000 + t.Millisecond;
-                        /**** got ms totLA***/
+                }
 
-                    double y0x = xa;
+            }
+            sw.Close();
+
+        }
+
+        public PersonDayInfo getPersonInfoByLena(String lenaId)
+        {
+            foreach (PersonDayInfo pdi in personDayMappings.Values)
+            {
+                if (pdi.lenaId == lenaId && pdi.present && pdi.status == "PRESENT")
+                {
+                    return pdi;
+                }
+            }
+            return new PersonDayInfo();
+        }
+        public double linearInterpolate(DateTime t, DateTime t1, double y0, DateTime t2, double y1)
+        {
+            double x0 = t1.Minute * 60000 + t1.Second * 1000 + t1.Millisecond;
+            double x1 = t2.Minute * 60000 + t2.Second * 1000 + t2.Millisecond;
+            double x = t.Minute * 60000 + t.Second * 1000 + t.Millisecond;
+            double lerp = (y0 * (x1 - x) + y1 * (x - x0)) / (x1 - x0);
+            return lerp;
+        }
+        public Tuple<double, double> linearInterpolate(DateTime t, DateTime t1, double xa, double ya, DateTime t2, double xb, double yb)
+        {
+            double x0 = t1.Minute * 60000 + t1.Second * 1000 + t1.Millisecond;
+            double x1 = t2.Minute * 60000 + t2.Second * 1000 + t2.Millisecond;
+            double x = t.Minute * 60000 + t.Second * 1000 + t.Millisecond;
+            /**** got ms totLA***/
+
+            double y0x = xa;
             double y1x = xb;
             double y0y = ya;
             double y1y = yb;
@@ -1618,7 +1652,7 @@ namespace UL_Processor_V2020
         {
             Dictionary<DateTime, Dictionary<String, PersonInfo>> ubiTenthsL = getTenthOfSecUbi(ubiLocationsL);
             Dictionary<DateTime, Dictionary<String, PersonInfo>> ubiTenthsR = getTenthOfSecUbi(ubiLocationsR);
-             
+
             ubiLocationsL.Clear();
             ubiLocationsR.Clear();
 
@@ -1628,7 +1662,7 @@ namespace UL_Processor_V2020
                 {
                     foreach (String person in ubiTenthsL[szTimeStamp].Keys)
                     {
-                        if(person.Contains("14"))
+                        if (person.Contains("14"))
                         {
                             Boolean stop = true;
                         }
@@ -1653,19 +1687,19 @@ namespace UL_Processor_V2020
                             {
                                 ubiTenths[szTimeStamp].Add(person, psi);
                             }
-                             
+
                         }
                     }
                 }
-                 
+
 
             }
         }
         public void setTenthOfSecLENA()
         {
-            foreach(String person in lenaOnsets.Keys)
+            foreach (String person in lenaOnsets.Keys)
             {
-                foreach(LenaOnset lenaOnset in lenaOnsets[person])
+                foreach (LenaOnset lenaOnset in lenaOnsets[person])
                 {
                     DateTime time = lenaOnset.startTime;
                     int ms = time.Millisecond > 0 ? time.Millisecond / 100 * 100 : time.Millisecond;// + 100;
@@ -1682,7 +1716,7 @@ namespace UL_Processor_V2020
                     Boolean setDbs = true;
 
                     Boolean personExists = personDayMappings.ContainsKey(person);
-                    if( personExists && blockDur>0)
+                    if (personExists && blockDur > 0)
                     {
                         if (lenaOnset.type != "Conversation_turnTaking" && lenaOnset.type != "CHN_CHF CryDur" && lenaOnset.type != "CHN_CHF UttDur")
                         {
@@ -1693,7 +1727,7 @@ namespace UL_Processor_V2020
 
                         do
                         {
-                           Boolean WUBI = ubiTenths.ContainsKey(time) && ubiTenths[time].ContainsKey(person);
+                            Boolean WUBI = ubiTenths.ContainsKey(time) && ubiTenths[time].ContainsKey(person);
                             if (WUBI && lenaOnset.type != "Conversation_turnTaking" && lenaOnset.type != "CHN_CHF CryDur" && lenaOnset.type != "CHN_CHF UttDur")
                             {
                                 personDayMappings[person].WUBILenaVars.avgDb += lenaOnset.avgDb;
@@ -1716,7 +1750,7 @@ namespace UL_Processor_V2020
                                         }
                                     }
                                     break;
-                                
+
                                 case "CHN_CHF CryDur":
 
                                     if (personExists)
@@ -1732,7 +1766,7 @@ namespace UL_Processor_V2020
                                     break;
                                 case "CHN_CHF UttDur":
 
-                                    if(personExists)
+                                    if (personExists)
                                     {
                                         personDayMappings[person].totalLenaVars.totalChildUttDuration += .1;
                                         if (WUBI)
@@ -1742,7 +1776,7 @@ namespace UL_Processor_V2020
                                             personDayMappings[person].WUBILenaVars.totalChildUttDuration += vocDur10;
                                         }
                                     }
-                                    
+
                                     break;
                                 case "CHN_CHF SegmentUttCount":
 
@@ -1754,7 +1788,7 @@ namespace UL_Processor_V2020
                                             ubiTenths[time][person].lenaVars.totalChildUttCount += vocCount10;
                                             personDayMappings[person].WUBILenaVars.totalChildUttCount += vocCount10;
                                         }
-                                    } 
+                                    }
                                     break;
                                 case "FAN SegmentUtt":
 
@@ -1767,7 +1801,7 @@ namespace UL_Processor_V2020
                                             personDayMappings[person].WUBILenaVars.totalAdultWordCount += vocCount10;
                                         }
                                     }
-                                     
+
                                     break;
                                 case "MAN SegmentUtt":
 
@@ -1781,7 +1815,7 @@ namespace UL_Processor_V2020
                                         }
                                     }
 
-                                     
+
                                     break;
 
                                 case "OLN Dur":
@@ -1814,7 +1848,7 @@ namespace UL_Processor_V2020
 
                                     break;
                             }
-                             
+
                             time = time.AddMilliseconds(100);
                             //vocDur -= 0.1;
                             blockDur -= 0.1;
@@ -1837,7 +1871,7 @@ namespace UL_Processor_V2020
                 {
                     PersonSuperInfo psi = ubiTenths[t][p];
                     Person pi = personBaseMappings[p];
-                    if(psi.wasTalking)
+                    if (psi.wasTalking)
                     {
                         bool stop = true;
                     }
@@ -1854,7 +1888,7 @@ namespace UL_Processor_V2020
                         psi.xr + "," +
                         psi.yr + "," +
                         psi.xl + "," +
-                        psi.yl  
+                        psi.yl
                         );
                 }
 
@@ -1870,7 +1904,7 @@ namespace UL_Processor_V2020
 
             foreach (String personId in ubiLocations.Keys)
             {
-                if (Utilities.getPerson(personDayMappings, personId).present && Utilities.getPerson(personDayMappings, personId).status=="PRESENT")
+                if (Utilities.getPerson(personDayMappings, personId).present && Utilities.getPerson(personDayMappings, personId).status == "PRESENT")
                 {
                     ubiLocations[personId].OrderBy(order => order.time);
                     List<UbiLocation> ubiLoc = ubiLocations[personId];
@@ -1954,7 +1988,7 @@ namespace UL_Processor_V2020
 
 
                     }
-                    maxTimes.Add(target.AddMilliseconds(-100));  
+                    maxTimes.Add(target.AddMilliseconds(-100));
                 }
             }
             return dayActivities;
@@ -2002,10 +2036,10 @@ namespace UL_Processor_V2020
 
 
             Dictionary<String, int> childStamps = new Dictionary<string, int>();
-            foreach(Activity act in logActivities)
+            foreach (Activity act in logActivities)
             {
                 String[] children = act.szChildren.Split('|');
-                foreach(String child in children)
+                foreach (String child in children)
                 {
                     //if(lenaOnsets.ContainsKey())
                     double tcc = 0;
@@ -2018,7 +2052,7 @@ namespace UL_Processor_V2020
 
                     double tcd = 0;
                     double svd = 0;
-                    double sud = 0; 
+                    double sud = 0;
                     double scd = 0;
                     double sad = 0;
                     double solnd = 0;
@@ -2031,10 +2065,10 @@ namespace UL_Processor_V2020
 
                     foreach (String k in lenaOnsets.Keys)
                     {
-                        if(lenaOnsets[k][0].subjectType.ToUpper().StartsWith("CHILD") && child== Utilities.getNumberIdFromChild(k))
+                        if (lenaOnsets[k][0].subjectType.ToUpper().StartsWith("CHILD") && child == Utilities.getNumberIdFromChild(k))
                         {
                             int startFrom = childStamps.ContainsKey(child) ? childStamps[child] : 0;
-                            while (startFrom< lenaOnsets[k].Count &&  lenaOnsets[k][startFrom].parentStartTime < act.start )
+                            while (startFrom < lenaOnsets[k].Count && lenaOnsets[k][startFrom].parentStartTime < act.start)
                             {
                                 startFrom++;
                             }
@@ -2051,7 +2085,7 @@ namespace UL_Processor_V2020
                                     case "CHN_CHF SegmentUttCount":
                                         svc += lo.count;
                                         svd += lo.durSecs;
-                                        avgDb  +=lo.avgDb;
+                                        avgDb += lo.avgDb;
                                         iavgDb++;
                                         avgPeak += lo.peakDb;
                                         iavgPeak++;
@@ -2097,33 +2131,33 @@ namespace UL_Processor_V2020
                             //int hCount = header.Split(',').Length;
 
                             int lCount = act.line.Split(',').Length;
-                            if(lCount>hCount)
+                            if (lCount > hCount)
                             {
-                                while(lCount>hCount)
+                                while (lCount > hCount)
                                 {
                                     act.line = act.line.Substring(0, act.line.LastIndexOf(","));
                                     lCount--;
                                 }
-                            } 
+                            }
                             else if (lCount < hCount)
                             {
                                 while (lCount < hCount)
                                 {
-                                    act.line = act.line+",";
+                                    act.line = act.line + ",";
                                     lCount++;
                                 }
-                            } 
-                            sw.WriteLine(act.line + ","+
-                                child +","+
-                                tcc + "," + tcd + "," + 
-                                svc + "," + svd + "," + 
-                                suc + ","  + sud + "," + 
-                                scc + "," + scd + "," + 
-                                sac + "," + sad + "," + 
-                                cxd+","+  
-                                (iavgDb!=0 && avgDb!=0? avgDb/iavgDb:0) +","+
-                                (iavgPeak != 0 && avgPeak != 0 ? avgPeak / iavgPeak:0));
-                                 
+                            }
+                            sw.WriteLine(act.line + "," +
+                                child + "," +
+                                tcc + "," + tcd + "," +
+                                svc + "," + svd + "," +
+                                suc + "," + sud + "," +
+                                scc + "," + scd + "," +
+                                sac + "," + sad + "," +
+                                cxd + "," +
+                                (iavgDb != 0 && avgDb != 0 ? avgDb / iavgDb : 0) + "," +
+                                (iavgPeak != 0 && avgPeak != 0 ? avgPeak / iavgPeak : 0));
+
                             /*    "Conversation_turnTaking COUNT,Conversation_turnTaking DUR,"+
                 "CHN_CHF SegmentUtt COUNT,CHN_CHF SegmentUttDUR," +
                 "CHN_CHF Utt COUNT,CHN_CHF Utt DUR," +
@@ -2144,7 +2178,7 @@ namespace UL_Processor_V2020
 
 
 
-             
+
         }
         public void writeActivityLogByMin1(String szOutputFile)
         {
@@ -2167,7 +2201,7 @@ namespace UL_Processor_V2020
 
 
             Dictionary<String, Dictionary<DateTime, List<LenaOnset>>> loms = new Dictionary<string, Dictionary<DateTime, List<LenaOnset>>>();
-            foreach(String person in lenaOnsets.Keys)
+            foreach (String person in lenaOnsets.Keys)
             {
                 if (lenaOnsets[person][0].subjectType.ToUpper().StartsWith("CHILD"))
                 {
@@ -2224,7 +2258,7 @@ namespace UL_Processor_V2020
 
 
 
-             
+
 
 
 
@@ -2253,12 +2287,12 @@ namespace UL_Processor_V2020
                     double cxd = 0;
 
                     DateTime stt = act.start;
-                    while(stt<act.end)
+                    while (stt < act.end)
                     {
                         try
                         {
                             List<LenaOnset> los = loms[child][stt];
-                            foreach(LenaOnset lo in los)
+                            foreach (LenaOnset lo in los)
                             {
                                 switch (lo.type)
                                 {
@@ -2293,7 +2327,7 @@ namespace UL_Processor_V2020
                             }
 
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
 
                         }
@@ -2310,7 +2344,7 @@ namespace UL_Processor_V2020
                                cxd);
 
 
- 
+
 
                 }
 
@@ -2374,14 +2408,14 @@ namespace UL_Processor_V2020
 
         }
 
-        public void writePersonActivityLogByMin(String person , ref TextWriter sw)
+        public void writePersonActivityLogByMin(String person, ref TextWriter sw)
         {
-            Dictionary<DateTime, List<LenaOnset>> loms = new  Dictionary<DateTime, List<LenaOnset>>();
+            Dictionary<DateTime, List<LenaOnset>> loms = new Dictionary<DateTime, List<LenaOnset>>();
             String p = Utilities.getNumberIdFromChild(person);
             int c = 0;
             //foreach (String person in lenaOnsets.Keys)
             {
-               // if (lenaOnsets[person][0].subjectType.ToUpper().StartsWith("CHILD"))
+                // if (lenaOnsets[person][0].subjectType.ToUpper().StartsWith("CHILD"))
                 {
                     foreach (LenaOnset lo in lenaOnsets[person])
                     {
@@ -2398,7 +2432,7 @@ namespace UL_Processor_V2020
                         c++;
                         while (lsm != lem)
                         {
-                             
+
 
                             nlo = new LenaOnset();
                             nloSecs = (lsm.AddMinutes(1) - stt).TotalSeconds;
@@ -2406,21 +2440,21 @@ namespace UL_Processor_V2020
                             nlo.durSecs = lds * nloSecs;
                             nlo.subjectType = lo.subjectType;
                             nlo.type = lo.type;
-                            if(nlo.count>0 || nlo.durSecs>0)
+                            if (nlo.count > 0 || nlo.durSecs > 0)
                             {
                                 if (!loms.ContainsKey(lsm))
                                     loms.Add(lsm, new List<LenaOnset>());
                                 loms[lsm].Add(lo);
                             }
-                            
+
 
                             lsm = lsm.AddMinutes(1);
                             stt = lsm;//.AddMinutes(1);
                         }
 
-                         
 
-                        
+
+
                         nloSecs = (ett - stt).TotalSeconds;
                         if (nloSecs != 0)
                         {
@@ -2436,7 +2470,7 @@ namespace UL_Processor_V2020
                                 nlo.type = lo.type;
                                 loms[lsm].Add(lo);
                             }
-                             
+
                         }
 
                     }
@@ -2521,7 +2555,7 @@ namespace UL_Processor_V2020
 
                             }
 
-                            stt=stt.AddMinutes(1);
+                            stt = stt.AddMinutes(1);
                         }
                         sw.WriteLine(act.line + "," +
                                    child + "," +
@@ -2542,7 +2576,7 @@ namespace UL_Processor_V2020
 
                 }
             }
-             
+
 
 
 

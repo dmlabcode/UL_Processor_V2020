@@ -11,9 +11,9 @@ namespace UL_Processor_V2020
         public DateTime time;
         public String type;
         public String tag;
-        public String id="";
-        public double x=0;
-        public double y=0;
+        public String id = "";
+        public double x = 0;
+        public double y = 0;
 
     }
     public class DateTimeComparer : IComparer<UbiLocation>

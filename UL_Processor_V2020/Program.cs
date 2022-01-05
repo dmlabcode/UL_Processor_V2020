@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace UL_Processor_V2020
 {
-     
+
     class Program
     {
         static String szVersion = "";
-         
 
-        static void Main( string[] arguments)
+
+        static void Main(string[] arguments)
         {
-           // Utilities.mergeDayFiles("E:\\StarFish_2021\\SYNC\\ONSETS", "21_GR0_22_061621_1596558875.CSV", "DAYONSETS_21_GR0_22_061621_1596558875.CSV");
+            // Utilities.mergeDayFiles("E:\\StarFish_2021\\SYNC\\ONSETS", "21_GR0_22_061621_1596558875.CSV", "DAYONSETS_21_GR0_22_061621_1596558875.CSV");
             /* 
            ARGUMENTS:
            DIR:
@@ -47,11 +47,17 @@ namespace UL_Processor_V2020
             //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_OLD// CLASSNAME:APPLETREE_1819 GRMIN:0.2 GRMAX:2 HRMIN:7 HRMAX:16 DAYS:8/30/2018,9/6/2018,9/13/2018,10/4/2018,10/11/2018,11/1/2018,11/8/2018,11/29/2018,12/6/2018,1/10/2019,2/7/2019,2/14/2019,3/7/2019,3/14/2019,4/4/2019,5/9/2019 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             // String[] szClassroomsToProcess = { "DIR:F:// CLASSNAME:StarFish_2021 GRMIN:0.2 GRMAX:2 HRMIN:7 HRMAX:13 DAYS:3/16/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             //String[] szClassroomsToProcess = { "DIR:F://CLASSROOMS_OLD//PRIDE_LEAP// CLASSNAME:PRIDE_LEAP_AM GRMIN:0.2 GRMAX:2 HRMIN:7 HRMAX:12 DAYS:01/23/2019,02/20/2019,03/20/2019,04/16/2019,5/30/2019 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-            String[] szClassroomsToProcess = { "DIR:E:// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:YES GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021,4/6/2021,4/13/2021,4/27/2021,5/20/2021,5/25/2021,6/8/2021,6/23/2021,7/28/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E:// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:YES GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021,4/6/2021,4/13/2021,4/27/2021,5/20/2021,5/25/2021,6/8/2021,6/23/2021,7/28/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             //String[] szClassroomsToProcess = { "DIR:E:// CLASSNAME:StarFish_2021 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021,4/6/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
 
+            //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_OLD//PRIDE_LEAP// CLASSNAME:PRIDE_LEAP_PM GRMIN:0.2 GRMAX:2 HRMIN:11 HRMAX:1 MINMAX:50 DAYS:01/25/2019,02/20/2019,03/20/2019,04/16/2019,5/30/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_OLD//PRIDE_LEAP// CLASSNAME:PRIDE_LEAP_AM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/23/2019,02/20/2019,03/20/2019,04/16/2019,5/30/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021,10/5/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021,10/5/2021,10/7/2021,11/2/2021,11/8/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            String[] szClassroomsToProcess = { "DIR:E://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021,10/5/2021,10/7/2021,11/2/2021,11/8/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
 
-            Boolean ubiCleanup = false;
+
+            Boolean ubiCleanup = false;// false;// true;// false;
             /******** A)FOR EACH CLASSROOM:********/
             foreach (String szClassroomArgs in szClassroomsToProcess)
             {
@@ -66,10 +72,10 @@ namespace UL_Processor_V2020
                         switch (setting[0].Trim())
                         {
                             case "JUSTUBICLEANUP":
-                                ubiCleanup =setting[1].Trim().ToUpper()=="YES";
+                                ubiCleanup = setting[1].Trim().ToUpper() == "YES";
                                 break;
                             case "DIR":
-                                classRoom.dir = setting[1].Trim()+ ":"+setting[2].Trim();
+                                classRoom.dir = setting[1].Trim() + ":" + setting[2].Trim();
                                 break;
                             case "ANGLE":
                                 classRoom.angle = Convert.ToDouble(setting[1].Trim());
@@ -93,9 +99,9 @@ namespace UL_Processor_V2020
                                 classRoom.endMinute = Convert.ToInt16(setting[1].Trim());
                                 break;
                             case "DAYS":
-                                foreach(String szDate in setting[1].Trim().Split(','))
+                                foreach (String szDate in setting[1].Trim().Split(','))
                                 {
-                                    classRoom.classRoomDays.Add(Utilities.getDate(szDate) );
+                                    classRoom.classRoomDays.Add(Utilities.getDate(szDate));
                                 }
                                 break;
                         }
@@ -115,7 +121,7 @@ namespace UL_Processor_V2020
 
 
                 /*4 Process Data or clean ubi */
-                if(!ubiCleanup)
+                if (!ubiCleanup)
                     classRoom.process(true);
                 else
                     classRoom.clean();
@@ -127,7 +133,7 @@ namespace UL_Processor_V2020
                 //classRoom.processOnsetsGrAndActLogs(); TO DELETE
                 classRoom.mergeDayFiles();
 
-                 
+
 
                 //Utilities.szVersion = "10_26_2020_478216537";// "10_21_2020_2098687227";// "10_20_2020_419130690";// "10_20_2020_986296434";// "10_19_2020_1345568271";//10_19_2020_1345568271  10_19_2020_1700354507
                 classRoom.getPairActLeadsFromFiles();
@@ -140,7 +146,7 @@ namespace UL_Processor_V2020
                 //classRoom.mergeSimpleFiles();
                 //classRoom.processTenthOfSecs();
             }
-             
+
             Console.ReadLine();
         }
     }
