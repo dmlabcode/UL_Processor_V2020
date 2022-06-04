@@ -28,6 +28,17 @@ namespace UL_Processor_V2020
         public double pairBlockTalking = 0;
         public double pairProxDuration = 0;
         public double pairProxOriDuration = 0;
+
+
+        public double subjectJoinedCryUnstructured;
+        public double partnerJoinedCryUnstructured;
+        public double joinedCryUnstructured;
+
+        public double pairBlockTalkingUnstructured = 0;
+        public double pairProxDurationUnstructured = 0;
+        public double pairProxOriDurationUnstructured = 0;
+        public double sharedTimeInSecsUnstructured = 0;
+
         /*PairBlockTalking,PairTalkingDuration,Subject-Talking-Duration-From_Start*/
 
         /*public double subjectVocUttCount = 0;
@@ -37,9 +48,17 @@ namespace UL_Processor_V2020
 
         public LenaVars subjectLenaVarsInContact = new LenaVars();
         public LenaVars partnerLenaVarsInContact = new LenaVars();
+
+        public LenaVars subjectLenaVarsInContactUnstructured = new LenaVars();
+        public LenaVars partnerLenaVarsInContactUnstructured = new LenaVars();
+
+
         public LenaVars subjectLenaVarsInWUBI = new LenaVars();
         public LenaVars partnerLenaVarsInWUBI = new LenaVars();
 
+
+            /********DEBUG CLEANUO W PAIRVARIABLES ABOVE*///////
+        public Dictionary<String, pairVariables> activityPairVariables = new Dictionary<string, pairVariables>();
 
         public Pair(String pair, String s, String p)
         {
@@ -47,5 +66,38 @@ namespace UL_Processor_V2020
             szPartnerMapId = p;
             szPair = pair;
         }
+    }
+    public class pairVariables
+    {
+        public double sharedTimeInSecs = 0;
+
+        public int partnerDistCount = 0;
+        public int subjectDistCount = 0;
+        public double partnerDist = 0;
+        public double subjectDist = 0;
+
+        public double subjectTotalTimeInSecs = 0;
+        public double partnerTotalTimeInSecs = 0;
+
+        public double subjectJoinedCry;
+        public double partnerJoinedCry;
+        public double joinedCry;
+
+        public double pairBlockTalking = 0;
+        public double pairProxDuration = 0;
+        public double pairProxOriDuration = 0;
+
+
+        public double subjectJoinedCryUnstructured;
+        public double partnerJoinedCryUnstructured;
+        public double joinedCryUnstructured;
+
+        
+        public LenaVars subjectLenaVarsInContact = new LenaVars();
+        public LenaVars partnerLenaVarsInContact = new LenaVars();
+ 
+        public LenaVars subjectLenaVarsInWUBI = new LenaVars();
+        public LenaVars partnerLenaVarsInWUBI = new LenaVars();
+
     }
 }

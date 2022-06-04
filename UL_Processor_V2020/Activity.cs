@@ -13,7 +13,7 @@ namespace UL_Processor_V2020
 
         public String type;
         public String szChildren;
-        public String szTeachers;
+        public String szAdults;
 
         public int children;
         public int teachers;
@@ -21,4 +21,18 @@ namespace UL_Processor_V2020
         //public List<String> children;
         //public List<String> teachers;
     }
+
+    public class DetailActivity
+    {
+        public DateTime start;
+        public DateTime end; 
+        
+        public String type;
+        public String[] lineCols; 
+
+        public List<String> childrenList = new List<string>();
+        public List<String> adultsList = new List<string>();
+    }
+
+  
 }

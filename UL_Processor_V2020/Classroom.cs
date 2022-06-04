@@ -5,9 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 namespace UL_Processor_V2020
-{//
+{
     class Classroom
     {
+        public Boolean ubiCleanup = false;
+        public Boolean useDenoised = false;
+        public Boolean reDenoise = false;
+       // public Boolean addGp = false;
+        public Boolean addActivities = false;
         public String dir = "";
         public String className = "";
         public double grMin = 0;
@@ -22,6 +27,7 @@ namespace UL_Processor_V2020
         public int endHour = 16;
         public int endMinute = 0;
         public Dictionary<String, List<String>> filesToMerge = new Dictionary<String, List<string>>();
+        public List<String> activityTypes = new List<String>();
 
 
         public List<String> diagnosisList = new List<string>();
@@ -29,7 +35,7 @@ namespace UL_Processor_V2020
 
         public void getPairActLeadsFromFiles()
         {
-            TextWriter sw = new StreamWriter(dir + "//SYNC//PAIRACTIVITY//PAIRACTIVITY_" + Utilities.szVersion + ".CSV");
+            TextWriter sw = new StreamWriter(dir + "//SYNC//PAIRACTIVITY//PAIRACTIVITY_" + Utilities.szVersion + "ALL.CSV");
             int numOfDays = classRoomDays.Count;
             Dictionary<String, String> prevPairLines = new Dictionary<string, string>();
             Dictionary<String, String> pairLines = new Dictionary<string, string>();
@@ -139,7 +145,7 @@ namespace UL_Processor_V2020
                         String[] line = commaLine.Split(',');
                         if (line.Length > 16 && line[1] != "")
                         {
-                            Person person = new Person(commaLine, mapById, dList, lList);//longid
+                            Person person = new Person(commaLine, mapById, dList,lList);//longid
 
                             if (!personBaseMappings.ContainsKey(person.mapId))
                             {
@@ -192,15 +198,57 @@ namespace UL_Processor_V2020
             {
                 ClassroomDay classRoomDay = new ClassroomDay(day);
                 classRoomDay.setMappings(dir + "//" + Utilities.getDateDashStr(day) + "//MAPPINGS//MAPPING_" + className + ".CSV", personBaseMappings, mapById, startHour, endHour, endMinute);
-
+ 
                 //CLEAN UBI
                 classRoomDay.createCleanUbiFile(dir, startHour, endHour);
             }
 
+       }
+        public void denoise()
+        {
+            foreach (DateTime day in classRoomDays)
+            {
+                ClassroomDay classRoomDay = new ClassroomDay(day);
+                classRoomDay.setMappings(dir + "//" + Utilities.getDateDashStr(day) + "//MAPPINGS//MAPPING_" + className + ".CSV", personBaseMappings, mapById, startHour, endHour, endMinute);
+
+                //CLEAN, DENOISE
+                if (this.reDenoise)
+                {
+                    String szDayFolder = Utilities.getDateDashStr(day);
+                    String szDenoisedFolder = dir + "//" + szDayFolder + "//Ubisense_Denoised_Data";
+
+                    if (Directory.Exists(szDenoisedFolder))
+                    {
+                        Directory.Delete(szDenoisedFolder);
+                    }
+                }
+                classRoomDay.createDenoisedFile(dir, className);//, startHour, endHour);
+            }
+
         }
-        public void process(Boolean all)
+
+        public void mergeAndCleanExistingDenoised()
+        {///
+            foreach (DateTime day in classRoomDays)
+            {
+                ClassroomDay classRoomDay = new ClassroomDay(day);
+                classRoomDay.setMappings(dir + "//" + Utilities.getDateDashStr(day) + "//MAPPINGS//MAPPING_" + className + ".CSV", personBaseMappings, mapById, startHour, endHour, endMinute);
+
+                //CLEAN UBI
+                classRoomDay.mergeAndCleanExistingDenoised(dir, startHour, endHour);
+            }
+
+        }
+        
+        
+        public void process(Boolean all,Boolean tenSecs)
         {
             makeDayReportLists();
+
+            TextWriter sw = new StreamWriter("testtimes.csv",false);
+            sw.WriteLine("ID,DATE,SECONDS,FROM,FROMMS,TO,TOMS");
+            sw.Close();
+
             /*4.1 For each Collection Day process daily files*/
             foreach (DateTime day in classRoomDays)
             {
@@ -226,27 +274,51 @@ namespace UL_Processor_V2020
 
                 //GR
                 String sGrOutputFile = dir + "//SYNC//GR//DAYGR_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
-                classRoomDay.readUbiLogsAndWriteGrFile(dir, sGrOutputFile, startHour, endHour);
+                classRoomDay.readUbiLogsAndWriteGrFile(dir, sGrOutputFile, startHour, endHour, useDenoised);
+                //TENTH OF SECS 
+                //SET UBI DATA FROM ubiLocations
+                //if(!useDenoised)
+                classRoomDay.setTenthOfSecUbi();
 
-                if (all)
+                classRoomDay.setTenthOfSecLENA();
+                String szTenthOutputFile = dir + "//SYNC//COTALK//DAYCOTALK_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
+                classRoomDay.writeTenthOfSec(szTenthOutputFile);
+
+                //DEBUG DELETE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                if(all || tenSecs)
                 {
                     //TENTH OF SECS 
                     //SET UBI DATA FROM ubiLocations
+                    //if(!useDenoised)
                     classRoomDay.setTenthOfSecUbi();
+
                     classRoomDay.setTenthOfSecLENA();
-                    String szTenthOutputFile = dir + "//SYNC//COTALK//DAYCOTALK_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
+                    // String szTenthOutputFile = dir + "//SYNC//COTALK//DAYCOTALK_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
                     classRoomDay.writeTenthOfSec(szTenthOutputFile);
+
+
+                }
+                if ( all)
+                {
+                    
+                    /********UNSTRUCTURED********/
+                    if(addActivities)
+                    {
+                        //activityLogsFinal
+                        classRoomDay.addActivities(dir + "//activityLogsFinal.csv", activityTypes);
+                    }
 
                     //Date	Subject	Partner	SubjectShortID	PartnerShortID	SubjectDiagnosis	PartnerDiagnosis	SubjectGender	PartnerGender	SubjectLanguage	PartnerLanguage	Adult	SubjectStatus	PartnerStatus	SubjectType	PartnerType	Input1_pvc_or_sac	Input2_pvc_or_stc	Input3_dur_pvd_or_uttl	PairBlockTalking	PairTalkingDuration	Subject-Talking-Duration-From_Start	Partner-Talking-Duration-From-Start	Subject-Talking-Duration-Evenly-Spread	Partner-Talking-Duration-Evenly-Spread	SubjectTurnCount	PartnerTurnCount	SubjectVocCount	PartnerVocCount	SubjectAdultCount	PartnerAdultCount	SubjectNoise	PartnerNoise	SubjectOLN	PartnerOLN	SubjectCry	PartnerCry	SubjectJoinedCry	PartnerJoinedCry	JoinedCry	PairProximityDuration	PairOrientation-ProximityDuration	SharedTimeinClassroom	SubjectTime	PartnerTime	TotalRecordingTime	WUBITotalVD	TotalVD	PartnerWUBITotalVD	PartnerTotalVD	WUBITotalVC	TotalVC	PartnerWUBITotalVC	PartnerTotalVC	WUBITotalTC	TotalTC	PartnerWUBITotalTC	PartnerTotalTC	WUBITotalAC	TotalAC	PartnerWUBITotalAC	PartnerTotalAC	WUBITotalNO	TotalNO	PartnerWUBITotalNO	PartnerTotalNO	WUBITotalOLN	TotalOLN	PartnerWUBITotalOLN	PartnerTotalOLN	WUBITotalCRY	TotalCRY	PartnerWUBITotalCRY	PartnerTotalCRY	WUBITotalAV_DB	TotalAV_DB	PartnerWUBITotalAV_DB	PartnerTotalAV_DB	WUBITotalAV_PEAK_DB	TotalAV_PEAK_DB	PartnerWUBITotalAV_PEAK_DB	PartnerTotalAV_PEAK_DB	Lead_Date	Lead_SubjectStatus	Lead_PartnerStatus	Lead_Input1_pvc_or_sac	Lead_Input2_pvc_or_stc	Lead_Input3_dur_pvd_or_uttl	Lead_PairBlockTalking	Lead_PairTalkingDuration	Lead_Subject-Talking-Duration-From_Start	Lead_Partner-Talking-Duration-From-Start	Lead_Subject-Talking-Duration-Evenly-Spread	Lead_Partner-Talking-Duration-Evenly-Spread	Lead_SubjectTurnCount	Lead_PartnerTurnCount	Lead_SubjectVocCount	Lead_PartnerVocCount	Lead_SubjectAdultCount	Lead_PartnerAdultCount	Lead_SubjectNoise	Lead_PartnerNoise	Lead_SubjectOLN	Lead_PartnerOLN	Lead_SubjectCry	Lead_PartnerCry	Lead_SubjectJoinedCry	Lead_PartnerJoinedCry	Lead_JoinedCry	Lead_PairProximityDuration	Lead_PairOrientation-ProximityDuration	Lead_SharedTimeinClassroom	Lead_SubjectTime	Lead_PartnerTime	Lead_TotalRecordingTime	Lead_WUBITotalVD	Lead_TotalVD	Lead_PartnerWUBITotalVD	Lead_PartnerTotalVD	Lead_WUBITotalVC	Lead_TotalVC	Lead_PartnerWUBITotalVC	Lead_PartnerTotalVC	Lead_WUBITotalTC	Lead_TotalTC	Lead_PartnerWUBITotalTC	Lead_PartnerTotalTC	Lead_WUBITotalAC	Lead_TotalAC	Lead_PartnerWUBITotalAC	Lead_PartnerTotalAC	Lead_WUBITotalNO	Lead_TotalNO	Lead_PartnerWUBITotalNO	Lead_PartnerTotalNO	Lead_WUBITotalOLN	Lead_TotalOLN	Lead_PartnerWUBITotalOLN	Lead_PartnerTotalOLN	Lead_WUBITotalCRY	Lead_TotalCRY	Lead_PartnerWUBITotalCRY	Lead_PartnerTotalCRY	Lead_WUBITotalAV_DB	Lead_TotalAV_DB	Lead_PartnerWUBITotalAV_DB	Lead_PartnerTotalAV_DB	Lead_WUBITotalAV_PEAK_DB	Lead_TotalAV_PEAK_DB	Lead_PartnerWUBITotalAV_PEAK_DB	Lead_PartnerTotalAV_PEAK_DB	Lead_CLASSROOM
                     //*INTERACTIONS*/
                     String szAngleOutputFile = dir + "//SYNC//PAIRANGLES//DAILY_ANGLES" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
                     String szAppOutputFile = dir + "//SYNC//APPROACH//DAILY_APP_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
-                    Dictionary<String, Pair> pairs = classRoomDay.countInteractions(this.grMin, this.grMax, this.angle, szAngleOutputFile, szAppOutputFile); //count interactions but no need to write a file
+                    Dictionary<String, Pair> pairs = classRoomDay.countInteractions(this.grMin, this.grMax,this.angle, szAngleOutputFile, szAppOutputFile); //count interactions but no need to write a file
 
                     //*PAIRACTIVITY REPORT*/
                     String szPairActOutputFile = dir + "//SYNC//PAIRACTIVITY//PAIRACTIVITY_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
-                    classRoomDay.writePairActivityData(pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList);
-
+                    classRoomDay.writePairActivityData(pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList, activityTypes);
+                    
                     filesToMerge["PAIRACTIVITIES"].Add(szPairActOutputFile);
 
                     /*AAPROACH*/
@@ -255,8 +327,8 @@ namespace UL_Processor_V2020
 
                     //*SOCIALONSETS  REPORT*/
                     String szSocialOnsetputFile = dir + "//SYNC//SOCIALONSETS//DAYSOCIALONSETS_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
-                    classRoomDay.writeSocialOnsetData(className, szSocialOnsetputFile, this.diagnosisList, this.languagesList);
-                    //pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList);
+                    classRoomDay.writeSocialOnsetData( className, szSocialOnsetputFile, this.diagnosisList, this.languagesList);
+                        //pairs, className, szPairActOutputFile, this.diagnosisList, this.languagesList);
                     filesToMerge["SOCIALONSETS"].Add(szSocialOnsetputFile);
 
                     //sw.WriteLine("Person 1, Person2, Interaction Time, Interaction Millisecond, Interaction, "+ angle+"Interaction, Angle1, Angle2, Leftx,Lefty,Rightx,Righty, Leftx2,Lefty2,Rightx2,Righty2,Type1, Type2, Gender1, Gender2, Diagnosis1, Diagnosis2, WasTalking1, WasTalking2 ");
@@ -271,7 +343,7 @@ namespace UL_Processor_V2020
             }
 
         }
-
+         
         public void processGofRfiles()
         {
             foreach (DateTime day in classRoomDays)
@@ -281,19 +353,19 @@ namespace UL_Processor_V2020
 
                 //GR
                 String sGrOutputFile = dir + "//SYNC//GR//DAYGR_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
-                classRoomDay.readUbiLogsAndWriteGrFile(dir, sGrOutputFile, startHour, endHour);
+                classRoomDay.readUbiLogsAndWriteGrFile(dir, sGrOutputFile, startHour, endHour,false);
             }
 
         }
 
         public void processRaw()
         {
-            process(false);
+            process(false,false);
 
         }
         public void processAll()
         {
-            process(true);
+            process(true,true);
 
         }
         /*public void processOnsetsGrAndActLogs()  //TO DELETE
@@ -331,45 +403,57 @@ namespace UL_Processor_V2020
         {
             foreach (List<String> files in filesToMerge.Values)
             {
-                Boolean includeHeader = true;
-                String szNewFileName = "";
                 TextWriter sw = null;
-                foreach (String szfile in files)
+                String szNewFileName = "";
+
+                try
                 {
-                    if (szNewFileName == "")
+                    Boolean includeHeader = true;
+                    
+                    foreach (String szfile in files)
                     {
-                        String szShortName = Path.GetFileName(szfile);
-                        szNewFileName = szShortName.Substring(0, szShortName.IndexOf("_"));
-                        szShortName = szShortName.Substring(szShortName.IndexOf("_") + 1);
-                        szNewFileName += szShortName.Substring(szShortName.IndexOf("_"));
-                        sw = new StreamWriter(szfile.Replace(Path.GetFileName(szfile), szNewFileName), true);
-                    }
-
-                    using (StreamReader sr = new StreamReader(szfile))
-                    {
-                        if ((!includeHeader) && (!sr.EndOfStream))
+                        if (szNewFileName == "")
                         {
-                            sr.ReadLine();
+                            String szShortName = Path.GetFileName(szfile);
+                            szNewFileName = szShortName.Substring(0, szShortName.IndexOf("_"));
+                            szShortName = szShortName.Substring(szShortName.IndexOf("_") + 1);
+                            szNewFileName += szShortName.Substring(szShortName.IndexOf("_"));
+                            sw = new StreamWriter(szfile.Replace(Path.GetFileName(szfile), szNewFileName), true);
                         }
 
-                        while ((!sr.EndOfStream))// && lineCount < 10000)
+                        using (StreamReader sr = new StreamReader(szfile))
                         {
-                            String commaLine = sr.ReadLine();
-                            sw.WriteLine(commaLine);
-                        }
-                    }
-                    includeHeader = false;
+                            if ((!includeHeader) && (!sr.EndOfStream))
+                            {
+                                sr.ReadLine();
+                            }
 
+                            while ((!sr.EndOfStream))// && lineCount < 10000)
+                            {
+                                String commaLine = sr.ReadLine();
+                                sw.WriteLine(commaLine);
+                            }
+                        }
+                        includeHeader = false;
+
+                    }
+                    if (szNewFileName != "")
+                    {
+                        sw.Close();
+                    }
                 }
-                if (szNewFileName != "")
+                catch(Exception e )
                 {
-                    sw.Close();
+                    if (szNewFileName != "")
+                    {
+                        sw.Close();
+                    }
                 }
             }
 
         }
     }
-
+         
     class ClassroomToDelete
     {
         public String dir = "";
@@ -507,8 +591,8 @@ namespace UL_Processor_V2020
                 Directory.CreateDirectory(dir + "//SYNC//MINACTIVITIES");
 
         }
-
-
+  
+        
         public Dictionary<String, List<String>> filesToMerge = new Dictionary<String, List<string>>();
         public void mergeDayFiles()
         {
