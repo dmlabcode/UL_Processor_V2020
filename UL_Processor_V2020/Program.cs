@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 
 
-using System.Diagnostics; 
-using IronPython.Hosting; 
+using System.Diagnostics;
+using IronPython.Hosting;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 
@@ -21,9 +21,9 @@ namespace UL_Processor_V2020
         public static void denoiseTest()//string cmd, string args)
         {
             string cmd = Path.Combine(AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", ""), "test2.py");
-            string args = "E:\\UL_2122\\StarFish_2122\\09-02-2021\\MAPPINGS\\MAPPING_StarFish_2122.csv "+
+            string args = "E:\\UL_2122\\StarFish_2122\\09-02-2021\\MAPPINGS\\MAPPING_StarFish_2122.csv " +
                 "E:\\UL_2122\\StarFish_2122\\09-02-2021\\Ubisense_Data\\MiamiLocation.2021-09-02_08-25-54-579_filtered.log " +
-                "E:\\UL_2122\\StarFish_2122\\09-02-2021\\LENA_Data\\ITS\\ "+
+                "E:\\UL_2122\\StarFish_2122\\09-02-2021\\LENA_Data\\ITS\\ " +
                 "E:\\UL_2122\\StarFish_2122\\09-02-2021\\Ubisense_Data_Denoised";
             ProcessStartInfo start = new ProcessStartInfo();
             start.FileName = "C:\\Users\\lcv31\\AppData\\Local\\Programs\\Python\\Python310\\python.exe";
@@ -140,7 +140,7 @@ namespace UL_Processor_V2020
             //String[] szClassroomsToProcess = { "DIR:D://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021,4/6/2021,4/13/2021,4/27/2021,5/20/2021,5/25/2021,6/8/2021,6/23/2021,7/28/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             // String[] szClassroomsToProcess = { "DIR:D://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021,10/5/2021,10/7/2021,11/2/2021,11/8/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             // String[] szClassroomsToProcess = { "DIR:E://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-           // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_OLD//PRIDE_LEAP// CLASSNAME:PRIDE_LEAP_AM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/23/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_OLD//PRIDE_LEAP// CLASSNAME:PRIDE_LEAP_AM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/23/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             String[] szClassroomsToProcess = { "DIR:E://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
 
 
@@ -223,7 +223,7 @@ namespace UL_Processor_V2020
                 /*3- Set Classroom’s Base Mappings */
                 classRoom.setBaseMappings();
 
-                 
+
             }
         }
         static void addGPtoFile(String originalFile, String gpFile)
@@ -247,7 +247,7 @@ namespace UL_Processor_V2020
                         foreach (String h in headers)
                         {
                             if (h.ToUpper().StartsWith("UNSTRUCTURED_") || h.ToUpper().StartsWith("LEAD_UNSTRUCTURED_") ||
-                                h.ToUpper().StartsWith("GP_") || h.ToUpper().StartsWith("LEAD_GP_")||
+                                h.ToUpper().StartsWith("GP_") || h.ToUpper().StartsWith("LEAD_GP_") ||
                                 h.ToUpper().StartsWith("M_") || h.ToUpper().StartsWith("LEAD_M_"))
                             {
                                 gps.Add(c);
@@ -270,7 +270,7 @@ namespace UL_Processor_V2020
                         String szValue = "";
                         foreach (int i in gps)
                         {
-                            szValue += ((line.Length>i? line[i]:"") + ",");
+                            szValue += ((line.Length > i ? line[i] : "") + ",");
                         }
                         valsGp.Add(szKey, szValue);
                     }
@@ -314,9 +314,9 @@ namespace UL_Processor_V2020
 
             }
         }
-        static void Main( string[] arguments)
+        static void Main(string[] arguments)
         {
-           
+
             // runPython(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", ""), "test2.py"));
             // runPython(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", ""), "prepare_classroom_motion_vocal_dataset.py"));
 
@@ -377,7 +377,7 @@ namespace UL_Processor_V2020
             //String[] szClassroomsToProcess = { "DIR:E://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:4/6/2021,4/27/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:TURTLES_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 DAYS:11/13/2019,12/06/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
 
-             
+
 
             /******** A)FOR EACH CLASSROOM:********/
             foreach (String szClassroomArgs in szClassroomsToProcess)
@@ -404,12 +404,12 @@ namespace UL_Processor_V2020
                         switch (setting[0].Trim())
                         {
                             case "UBICLEANUP":
-                                classRoom.ubiCleanup =setting[1].Trim().ToUpper()=="YES";
+                                classRoom.ubiCleanup = setting[1].Trim().ToUpper() == "YES";
                                 break;
                             case "ADDGP":
-                              //  classRoom.addGp = setting[1].Trim().ToUpper() == "YES";
+                                //  classRoom.addGp = setting[1].Trim().ToUpper() == "YES";
                                 break;
-                           case "REDENOISE":
+                            case "REDENOISE":
                                 classRoom.reDenoise = setting[1].Trim().ToUpper() == "YES";
                                 break;
                             case "USEDENOISED":
@@ -419,7 +419,7 @@ namespace UL_Processor_V2020
                                 toProcess = setting[1].Trim().ToUpper() == "YES";
                                 break;
                             case "DIR":
-                                classRoom.dir = setting[1].Trim()+ ":"+setting[2].Trim();
+                                classRoom.dir = setting[1].Trim() + ":" + setting[2].Trim();
                                 break;
                             case "ANGLE":
                                 classRoom.angle = Convert.ToDouble(setting[1].Trim());
@@ -443,9 +443,9 @@ namespace UL_Processor_V2020
                                 classRoom.endMinute = Convert.ToInt16(setting[1].Trim());
                                 break;
                             case "DAYS":
-                                foreach(String szDate in setting[1].Trim().Split(','))
+                                foreach (String szDate in setting[1].Trim().Split(','))
                                 {
-                                    classRoom.classRoomDays.Add(Utilities.getDate(szDate) );
+                                    classRoom.classRoomDays.Add(Utilities.getDate(szDate));
                                 }
                                 classRoom.addActivities = true;
                                 break;
@@ -465,30 +465,30 @@ namespace UL_Processor_V2020
                      Set Classroom Object mapId to link mapping files and data
                      Create directories for distinct reports*/
 
-               
+
 
                 Utilities.setVersion(classRoom.grMin, classRoom.grMax);//run day and GR version for file naming
                 classRoom.mapById = "LONGID";
                 classRoom.setDirs();
 
 
-            //    Utilities.szVersion = "_GR0_22_051722_1358347332";// PAIRACTIVITY_GR0_22_051722_1358347332 "10_21_2020_2098687227";// "10_20_2020_419130690";// "10_20_2020_986296434";// "10_19_2020_1345568271";//10_19_2020_1345568271  10_19_2020_1700354507
-            //    classRoom.getPairActLeadsFromFiles();
+                //    Utilities.szVersion = "_GR0_22_051722_1358347332";// PAIRACTIVITY_GR0_22_051722_1358347332 "10_21_2020_2098687227";// "10_20_2020_419130690";// "10_20_2020_986296434";// "10_19_2020_1345568271";//10_19_2020_1345568271  10_19_2020_1700354507
+                //    classRoom.getPairActLeadsFromFiles();
 
 
 
-               
+
                 /*3- Set Classroom’s Base Mappings */
                 classRoom.setBaseMappings();
 
                 //denoise();
-                
+
                 /*4 Clean ubi */
                 if (classRoom.ubiCleanup)
                     classRoom.clean();
 
 
-               //Batya's addGPtoFile("E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_7_10_2020_1186946197ALL.CSV", "E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_052522_35376472ALL.CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
+                // Batya's addGPtoFile("E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_7_10_2020_1186946197ALL.CSV", "E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_052522_35376472ALL.CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
 
 
 
@@ -496,19 +496,19 @@ namespace UL_Processor_V2020
                 {
                     classRoom.denoise(); //denoise();
                 }
-                 
+
                 /* 5 Process */
                 if (toProcess)
-                    classRoom.process(true,true);
+                    classRoom.process(true, true);
 
                 // classRoom.processGofRfiles();
                 // classRoom.processFromGofRfiles("", true);
                 //classRoom.processOnsetsGrAndActLogs(); TO DELETE
-             
-                
+
+
                 classRoom.mergeDayFiles();
 
-                 
+
 
                 //Utilities.szVersion = "10_26_2020_478216537";// "10_21_2020_2098687227";// "10_20_2020_419130690";// "10_20_2020_986296434";// "10_19_2020_1345568271";//10_19_2020_1345568271  10_19_2020_1700354507
                 classRoom.getPairActLeadsFromFiles();
