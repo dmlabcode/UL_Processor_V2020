@@ -219,7 +219,7 @@ namespace UL_Processor_V2020
 
                     if (Directory.Exists(szDenoisedFolder))
                     {
-                        Directory.Delete(szDenoisedFolder);
+                        Directory.Delete(szDenoisedFolder,true);
                     }
                 }
                 classRoomDay.createDenoisedFile(dir, className);//, startHour, endHour);
@@ -284,7 +284,7 @@ namespace UL_Processor_V2020
                 String szTenthOutputFile = dir + "//SYNC//COTALK//DAYCOTALK_" + Utilities.getDateStrMMDDYY(day) + "_" + Utilities.szVersion + ".CSV";
                 classRoomDay.writeTenthOfSec(szTenthOutputFile);
 
-                //DEBUG DELETE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //DEBUG DELETE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!??????
 
                 if(all || tenSecs)
                 {

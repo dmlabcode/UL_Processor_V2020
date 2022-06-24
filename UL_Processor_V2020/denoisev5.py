@@ -160,6 +160,7 @@ def pair_and_interpolate_motion_data(
 
         rst[sid] = pd.DataFrame.from_dict(sdata)
         progress.close()
+     
 
     return rst
 
@@ -417,8 +418,13 @@ def orientation_outlier_removal(
                 neg_suboutliers[t] = -outlier_th <= do_delta[t] < -suboutlier_th
 
         do = [o[0] / 180. * np.pi]
-        for v in do_delta:
-            do.append(do[-1] + v / 180. * np.pi)
+        for v, ot in zip(do_delta, o[:-1]):
+            if np.isnan(do[-1]) and np.isnan(v):
+                do.append(np.nan)
+            else:
+                if np.isnan(do[-1]):
+                    do[-1] = ot / 180. * np.pi
+                do.append(do[-1] + v / 180. * np.pi)
         sdata[do_col] = do
 
 

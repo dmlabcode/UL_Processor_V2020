@@ -141,19 +141,20 @@ namespace UL_Processor_V2020
             // String[] szClassroomsToProcess = { "DIR:D://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021,10/5/2021,10/7/2021,11/2/2021,11/8/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             // String[] szClassroomsToProcess = { "DIR:E://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_OLD//PRIDE_LEAP// CLASSNAME:PRIDE_LEAP_AM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/23/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-            String[] szClassroomsToProcess = { "DIR:E://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+           // String[] szClassroomsToProcess = { "DIR:E://UL_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:9/2/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            String[] szClassroomsToProcess = { "DIR:E:// CLASSNAME:StarFish_2021 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
 
 
             /******** A)FOR EACH CLASSROOM:********/
             foreach (String szClassroomArgs in szClassroomsToProcess)
             {
-                Boolean toDenoise = false;// false;// true;// false;
+                Boolean toDenoise = true;// false;// true;// false;
                 Boolean toProcess = true;// false;// true;// false;
 
                 /*1- Create Classroom Object, read and set Parameters*/
                 Classroom classRoom = new Classroom();
                 classRoom.reDenoise = true;
-                classRoom.useDenoised = false;// false;// true;// false;
+                classRoom.useDenoised = true;// false;// true;// false;
                 classRoom.ubiCleanup = true;// false;// true;// false;
                 String[] args = szClassroomArgs.Split(' ');
                 foreach (String arg in args)
@@ -375,7 +376,9 @@ namespace UL_Processor_V2020
             // String[] szClassroomsToProcess = { "DIR:E://UL_2122//PRIDE_2122// CLASSNAME:LEAP_AM_2122 GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:11 DAYS:10/25/2021,11/19/2021,12/3/21,1/28/2022,2/25/2022,3/29/2022 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             //String[] szClassroomsToProcess = { "DIR:E://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021,4/6/2021,4/13/2021,4/27/2021,5/20/2021,5/25/2021,6/8/2021,6/23/2021,7/28/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             //String[] szClassroomsToProcess = { "DIR:E://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:4/6/2021,4/27/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-            String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:TURTLES_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 DAYS:11/13/2019,12/06/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS1920// CLASSNAME:TURTLES_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 DAYS:11/13/2019,12/06/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+           // String[] szClassroomsToProcess = { "DIR:D://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            String[] szClassroomsToProcess = { "DIR:D://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:4/6/2021,4/13/2021,4/27/2021,5/20/2021,5/25/2021,6/8/2021,6/23/2021,7/28/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
 
 
 
@@ -387,13 +390,13 @@ namespace UL_Processor_V2020
                 /*1- Create Classroom Object, read and set Parameters*/
                 Classroom classRoom = new Classroom();
 
-                classRoom.useDenoised = false;//true;// true;// false;// false;// true;// false;
-                classRoom.ubiCleanup = false;// true;// false;// true;// false;
+                classRoom.useDenoised = true;//true;// true;// false;// false;// true;// false;
+                classRoom.ubiCleanup = true;// true;// false;// true;// false;
                 classRoom.reDenoise = false;//true;// false;// true;// false;
-                classRoom.addActivities = true;
-                classRoom.activityTypes.Add("unstructured");
-                classRoom.activityTypes.Add("GP");
-                classRoom.activityTypes.Add("M");
+                classRoom.addActivities = false;// true;
+               //  classRoom.activityTypes.Add("unstructured");
+                //classRoom.activityTypes.Add("GP");
+               // classRoom.activityTypes.Add("M");
 
                 String[] args = szClassroomArgs.Split(' ');
                 foreach (String arg in args)
@@ -499,7 +502,7 @@ namespace UL_Processor_V2020
 
                 /* 5 Process */
                 if (toProcess)
-                    classRoom.process(true, true);
+                    classRoom.process(false, true);
 
                 // classRoom.processGofRfiles();
                 // classRoom.processFromGofRfiles("", true);
@@ -514,7 +517,7 @@ namespace UL_Processor_V2020
                 classRoom.getPairActLeadsFromFiles();
 
 
-                addGPtoFile("E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_7_10_2020_1186946197ALL.CSV", "E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_052522_35376472ALL.CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
+                //addGPtoFile("E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_7_10_2020_1186946197ALL.CSV", "E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_052522_35376472ALL_"+ new Random().Next()+".CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
 
 
 

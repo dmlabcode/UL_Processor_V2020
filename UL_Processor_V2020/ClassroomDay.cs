@@ -94,7 +94,7 @@ namespace UL_Processor_V2020
                                     
                                     detailedActivities[detailActivity.type][sTime][eTime].childrenList.Add(line[13].Trim());
 
-                                    foreach (String adult in line[2].Trim().Split('|'))
+                                    foreach (String adult in line[5].Trim().Split('|'))
                                     {
                                         if (!detailedActivities[detailActivity.type][sTime][eTime].adultsList.Contains(adult))
                                         {
@@ -122,7 +122,7 @@ namespace UL_Processor_V2020
 
                                     detailedActivities[detailActivity.type][sTime][eTime].childrenList.Add(line[13].Trim());
 
-                                    foreach (String adult in line[2].Trim().Split('|'))
+                                    foreach (String adult in line[5].Trim().Split('|'))
                                     {
                                         if (!detailedActivities[detailActivity.type][sTime][eTime].adultsList.Contains(adult))
                                         {
@@ -621,10 +621,18 @@ foreach(String actType in activityTypes)// if(addActivities)
             Boolean isGP2 = false;
             
             Boolean pass = false;
+             
+            Boolean aP1 = personBaseMappings[p1].subjectType.ToUpper() != "CHILD";
+            Boolean aP2 = personBaseMappings[p2].subjectType.ToUpper() != "CHILD";
+            if (t.Hour == 9 && t.Minute == 34)
+            {
+                bool stop = true;
+            }
+               
 
-            if (personBaseMappings[p1].subjectType.ToUpper() != "CHILD" && p1.LastIndexOf("_")<=p1.Length-3)
+            if (aP1 && p1.LastIndexOf("_")<=p1.Length-3)
                 p1 = p1.Substring(p1.LastIndexOf("_") + 1, 2);
-            if (personBaseMappings[p2].subjectType.ToUpper() != "CHILD" && p2.LastIndexOf("_") <= p2.Length - 3)
+            if (aP2 && p2.LastIndexOf("_") <= p2.Length - 3)
                 p2= p2.Substring(p2.LastIndexOf("_") + 1, 2);
 
             Dictionary<DateTime, Dictionary<DateTime, DetailActivity>> UdetailedActivities= detailedActivities[type].OrderBy(x => x.Key).ThenBy(x => x.Key.Millisecond).ToDictionary(x => x.Key, x => x.Value);
@@ -639,11 +647,9 @@ foreach(String actType in activityTypes)// if(addActivities)
                     {
                         //if (detailedActivities[sd][ed].type == "GP")
                         {
-                            if (UdetailedActivities[sd][ed].childrenList.Contains(p1))
-                                isGP1 = true;
-                            if (UdetailedActivities[sd][ed].childrenList.Contains(p2))
-                                isGP2 = true;
-
+                            isGP1 = aP1?(UdetailedActivities[sd][ed].adultsList.Contains(p1))   : (UdetailedActivities[sd][ed].childrenList.Contains(p1));
+                            isGP2 = aP2 ? (UdetailedActivities[sd][ed].adultsList.Contains(p2)) : (UdetailedActivities[sd][ed].childrenList.Contains(p2));
+                             
                             if (isGP1 && isGP2)
                             {
                                 pass = true;
@@ -963,7 +969,7 @@ foreach(String actType in activityTypes)// if(addActivities)
             return pairs;
 
 
-        }
+        }//
 
         public void countInteractionsPerAct(double minGr, double maxGr, double angle, ref Pair pair, DateTime t)
         {//pairs are unique not repeated
@@ -972,7 +978,7 @@ foreach(String actType in activityTypes)// if(addActivities)
             {
                 foreach (String actType in detailedActivities.Keys)
                 {
-                    Tuple<Boolean, Boolean, Boolean> pairInActFlags = isPairInActivity(t, pair.szSubjectMapId, pair.szPartnerMapId,actType);
+                    Tuple<Boolean, Boolean, Boolean> pairInActFlags = isPairInActivity(t, pair.szSubjectMapId, pair.szPartnerMapId,actType);//
                     if (!pair.activityPairVariables.ContainsKey(actType))
                         pair.activityPairVariables.Add(actType, new pairVariables());
 
@@ -1197,13 +1203,16 @@ foreach(String actType in activityTypes)// if(addActivities)
             foreach (string file in ubiLogFiles)
             {
                 String fileName = Path.GetFileName(file);
-                if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith(".log"))
+                
+                 
+                    if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith(".log"))
                 {
 
                     using (StreamReader sr = new StreamReader(file))
                     {
                         while (!sr.EndOfStream)
                         {
+                          
                             String szLine = sr.ReadLine();
                             String[] line = szLine.Split(',');
                             if (line.Length >= 5)
@@ -1213,45 +1222,49 @@ foreach(String actType in activityTypes)// if(addActivities)
                                 Double xPos = Convert.ToDouble(line[3]);
                                 Double yPos = Convert.ToDouble(line[4]);
 
-                                if (Utilities.isSameDay(lineTime, classDay) &&
-                                    lineTime.Hour >= startHour &&
-                                    lineTime.Hour <= endHour)
+                                //TO DEBUG IF
                                 {
-                                    UbiLocation ubiLoc = new UbiLocation();
-                                    ubiLoc.tag = tag;
-                                    findTagPerson(ref ubiLoc, lineTime);
-                                    if (ubiLoc.id == "")
-                                    {
-                                        // sw.WriteLine(szLine.Replace(tag, "?") + "," + "?" + "," + tag);
-                                    }
 
-
-                                    if (ubiLoc.id != "" &&
-                                        subjectStartLena.ContainsKey(ubiLoc.id) &&
-                                        subjectEndLena.ContainsKey(ubiLoc.id) &&
-                                        lineTime >= subjectStartLena[ubiLoc.id] &&
-                                        lineTime <= subjectEndLena[ubiLoc.id])
+                                    if (Utilities.isSameDay(lineTime, classDay) &&
+                                        lineTime.Hour >= startHour &&
+                                        lineTime.Hour <= endHour)
                                     {
-                                        ubiLoc.x = xPos;
-                                        ubiLoc.y = yPos;
-                                        ubiLoc.time = lineTime;
-                                        if (ubiLoc.type == "L")
+                                        UbiLocation ubiLoc = new UbiLocation();
+                                        ubiLoc.tag = tag;
+                                        findTagPerson(ref ubiLoc, lineTime);
+                                        if (ubiLoc.id == "")
                                         {
-                                            if (!ubiLocationsL.ContainsKey(ubiLoc.id))
-                                                ubiLocationsL.Add(ubiLoc.id, new List<UbiLocation>());
-                                            ubiLocationsL[ubiLoc.id].Add(ubiLoc);
-                                        }
-                                        else
-                                        {
-                                            if (!ubiLocationsR.ContainsKey(ubiLoc.id))
-                                                ubiLocationsR.Add(ubiLoc.id, new List<UbiLocation>());
-                                            ubiLocationsR[ubiLoc.id].Add(ubiLoc);
+                                            // sw.WriteLine(szLine.Replace(tag, "?") + "," + "?" + "," + tag);
                                         }
 
-                                        sw.WriteLine(szLine.Replace(tag, ubiLoc.id + ubiLoc.type) + "," + ubiLoc.id + ubiLoc.type + "," + tag);
-                                        // swc.WriteLine(szLine.Replace(i.tag, personId + i.tagType) + "," + i.tag);
-                                    }
 
+                                        if (ubiLoc.id != "" &&
+                                            subjectStartLena.ContainsKey(ubiLoc.id) &&
+                                            subjectEndLena.ContainsKey(ubiLoc.id) &&
+                                            lineTime >= subjectStartLena[ubiLoc.id] &&
+                                            lineTime <= subjectEndLena[ubiLoc.id])
+                                        {
+                                            ubiLoc.x = xPos;
+                                            ubiLoc.y = yPos;
+                                            ubiLoc.time = lineTime;
+                                            if (ubiLoc.type == "L")
+                                            {
+                                                if (!ubiLocationsL.ContainsKey(ubiLoc.id))
+                                                    ubiLocationsL.Add(ubiLoc.id, new List<UbiLocation>());
+                                                ubiLocationsL[ubiLoc.id].Add(ubiLoc);
+                                            }
+                                            else
+                                            {
+                                                if (!ubiLocationsR.ContainsKey(ubiLoc.id))
+                                                    ubiLocationsR.Add(ubiLoc.id, new List<UbiLocation>());
+                                                ubiLocationsR[ubiLoc.id].Add(ubiLoc);
+                                            }
+
+                                            sw.WriteLine(szLine.Replace(tag, ubiLoc.id + ubiLoc.type) + "," + ubiLoc.id + ubiLoc.type + "," + tag);
+                                            // swc.WriteLine(szLine.Replace(i.tag, personId + i.tagType) + "," + i.tag);
+                                        }
+
+                                    }
                                 }
                             }
                         }
@@ -1289,17 +1302,19 @@ foreach(String actType in activityTypes)// if(addActivities)
                         {
                             sr.ReadLine();
                         }
+                        int row = 0;
                         while (!sr.EndOfStream)
                         {
                             String szLine = sr.ReadLine();
-                            
+                            row++;
                                 
                             String[] line = szLine.Split(',');
-                            if (line.Length >= 7)
+                            if (line.Length >= 7 && line[1].Trim()!="")
                             {
                                 String ltag = pdi.leftUbi;
                                 String rtag = pdi.rightUbi;
                                 //Time	lx	ly	lz	rx	ry	rz	o	dis2d	cx	cy	cz	o_kf	lx_kf	ly_kf	rx_kf	ry_kf	dis2d_kf	cx_kf	cy_kf	vocal
+                                //Time	lx	ly	lz	rx	ry	rz	o	dis2d	cx	cy	cz	o_kf	lx_kf	ly_kf	rx_kf	ry_kf	dis2d_kf	cx_kf	cy_kf	chn_vocal	chf_vocal	adult_vocal	chn_vocal_average_dB	chf_vocal_average_dB	adult_vocal_average_dB	chn_vocal_peak_dB	chf_vocal_peak_dB	adult_vocal_peak_dB
                                 DateTime lineTime = Convert.ToDateTime(line[0]);
                                 Double xPosl = Convert.ToDouble(line[1]);
                                 Double yPosl = Convert.ToDouble(line[2]);
@@ -1697,11 +1712,7 @@ foreach(String actType in activityTypes)// if(addActivities)
                         String nteachers = "";
                         start = start.AddSeconds(-start.Second).AddMilliseconds(-start.Millisecond);
                         end = end.AddSeconds(-end.Second).AddMilliseconds(-end.Millisecond);
-                        //DELETE DEBUG
-                        if (start.Hour>=9&&start.Minute>=7)
-                        {
-                            bool stop = true;
-                        }
+                         
                         foreach(Activity act in logActivities)
                         {
 
@@ -1747,12 +1758,7 @@ foreach(String actType in activityTypes)// if(addActivities)
                                 break;
                         }
 
-                        //DELETE DEBUG
-                        if (start.Hour >= 9 && start.Minute >= 6 && acts=="")
-                        {
-                            bool stop = true;
-                        }
-
+                         
                         return new Tuple<string, string, string, String, String>(acts,children,teachers,nchildren,nteachers);
                     }
         public void readOnsetsAndActivity(String dir, String szOutputFile, int startHour, int endHour, int endMinute)//, ref ClassroomDay classroomDay)
@@ -1803,11 +1809,7 @@ foreach(String actType in activityTypes)// if(addActivities)
                 XmlNodeList rec = doc.ChildNodes[0].SelectNodes("ProcessingUnit/Recording");
                 foreach (XmlNode recording in rec)
                 {
-                    //DELETE DEBUG
-                    if(szLenaId== "29640")
-                    {
-                        Boolean stop = true;
-                    }
+                     
                     double recStartSecs = Convert.ToDouble(recording.Attributes["startTime"].Value.Substring(2, recording.Attributes["startTime"].Value.Length - 3));
                     DateTime recStartTime = DateTime.Parse(recording.Attributes["startClockTime"].Value);
                     XmlNodeList nodes = recording.SelectNodes("Conversation|Pause");
@@ -1857,11 +1859,7 @@ foreach(String actType in activityTypes)// if(addActivities)
 
                                         if (tc > 0)
                                         {
-                                            // DEBUG DELETE Tuple<String, String, String> logActs = getLogActivities(start, end, false, "");
-                                            if (start.Month == 1 && start.Year == 2019 && start.Day == 23 && start.Hour == 9 && (start.Minute == 0 || start.Minute == 1))
-                                            {
-                                                Boolean stop = true;
-                                            }
+                                            
 
                                             Tuple<String, String, String, String, String> logActs = getLogActivities(start, end, true, Utilities.getNumberIdFromPerson(pi));
                                             sw.WriteLine(Path.GetFileName(itsFile) + "," +
@@ -2347,9 +2345,10 @@ foreach(String actType in activityTypes)// if(addActivities)
              
             ubiLocationsL.Clear();
             ubiLocationsR.Clear();
-
+            
             foreach (DateTime szTimeStamp in ubiTenthsL.Keys)
             {
+                
                 if (ubiTenthsR.ContainsKey(szTimeStamp))
                 {
                     foreach (String person in ubiTenthsL[szTimeStamp].Keys)
