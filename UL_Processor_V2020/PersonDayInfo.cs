@@ -21,6 +21,10 @@ namespace UL_Processor_V2020
         public LenaVars WUBILenaVars = new LenaVars();
 
 
+        public Dictionary<String, LenaVars> totalLenaVarsAct = new Dictionary<string, LenaVars>();
+       // public Dictionary<String, LenaVars> WUBILenaVarsAct = new Dictionary<string, LenaVars>();
+
+
 
 
         public PersonDayInfo()
@@ -51,6 +55,8 @@ namespace UL_Processor_V2020
                 {
                     endDate = Convert.ToDateTime(line[12].Trim());
                     endDate = new DateTime(ed.Year, ed.Month, ed.Day, endDate.Hour, endDate.Minute, endDate.Second);
+                    if (endDate.Hour >= 1)
+                        endDate=endDate.AddHours(12);
                 }
                 catch (Exception e)
                 {

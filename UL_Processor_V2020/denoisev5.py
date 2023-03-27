@@ -18,8 +18,8 @@ LAB_MEMBER_SUBJECT = "Lab"
 SUBJECT_TYPES = [CHILD_SUBJECT, TEACHER_SUBJECT, LAB_MEMBER_SUBJECT]
 GAP_TOLERANCE = 60
 
-
-def load_mapping_file(path: Path, remove_lab: bool = True) -> pd.DataFrame:
+#def load_mapping_file(path: Path, remove_lab: bool = True) -> pd.DataFrame:
+def load_mapping_file(path: Path, remove_lab: bool = False) -> pd.DataFrame:
     """ Load mapping file
 
     The mapping file should contain six columns: Subject_ID, Roster, TYPE, Left Tag, Right Tag, and LENA DLP ID.
@@ -43,13 +43,15 @@ def load_mapping_file(path: Path, remove_lab: bool = True) -> pd.DataFrame:
 
             if remove_lab and row["TYPE"] == LAB_MEMBER_SUBJECT:
                 continue
-
+            if row["STATUS"] == "ABSENT":
+                continue
+            logging.warning("HELLO")
             data[subject_id] = {
                 "Name": row[0],
                 "Type": row["TYPE"],
                 "LeftTag": row["Left Tag"],
                 "RightTag": row["Right Tag"],
-                "LENA": int(row["LENA DLP ID"])
+                "LENA": int(row[8])
             }
 
     return pd.DataFrame.from_dict(data, orient="index")

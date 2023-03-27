@@ -232,6 +232,7 @@ namespace UL_Processor_V2020
             if (File.Exists(originalFile) && File.Exists(gpFile))
             {
                 Dictionary<String, String> valsGp = new Dictionary<string, string>();
+                Dictionary<String, Tuple<String, String, String>> valsTime = new Dictionary<string, Tuple<String, String, String>>();
                 String szGpHeaders = "";
                 using (StreamReader sr = new StreamReader(gpFile))
                 {
@@ -240,6 +241,9 @@ namespace UL_Processor_V2020
                     String[] line;
                     String[] headers;
                     List<int> gps = new List<int>();
+                    int st = -1;
+                    int pt = -1;
+                    int rt = -1;
                     if (!sr.EndOfStream)
                     {
                         commaLine = sr.ReadLine();
@@ -254,13 +258,30 @@ namespace UL_Processor_V2020
                                 gps.Add(c);
                                 szGpHeaders += (h.ToUpper() + ",");
                             }
+
+
+                            if (h.ToUpper().Trim() == "SUBJECTTIME")
+                            {
+                                st = c;
+                            }
+
+                            if (h.ToUpper().Trim() == "PARTNERTIME")
+                            {
+                                pt = c;
+                            }
+
+                            if (h.ToUpper().Trim() == "TOTALRECORDINGTIME")
+                            {
+                                rt = c;
+                            }
                             c++;
 
                         }
                     }
-
+                    int rowCount = 0;
                     while ((!sr.EndOfStream))// && lineCount < 10000)
                     {
+                        rowCount++;
                         commaLine = sr.ReadLine();
                         line = commaLine.Split(',');
 
@@ -274,6 +295,14 @@ namespace UL_Processor_V2020
                             szValue += ((line.Length > i ? line[i] : "") + ",");
                         }
                         valsGp.Add(szKey, szValue);
+                        if (line.Length >= st && line.Length >= pt && line.Length >= rt)
+                        {
+                            valsTime.Add(szKey, new Tuple<String, String, String>(line[st], line[pt], line[rt]));
+                        }
+                        else
+                        {
+                            bool stop = true;
+                        }
                     }
 
 
@@ -287,25 +316,94 @@ namespace UL_Processor_V2020
 
                         String commaLine;
                         String[] line;
-
+                        String[] headers;
+                        int st = -1;
+                        int pt = -1;
+                        int rt = -1;
                         if (!sr.EndOfStream)
                         {
                             commaLine = sr.ReadLine();
                             sw.WriteLine(commaLine + "," + szGpHeaders);
-                        }
+                            headers = commaLine.Split(',');
+                            int c = 0;
+                            foreach (String h in headers)
+                            {
+                                
+                                if (h.ToUpper().Trim() == "SUBJECTTIME")
+                                {
+                                    st = c;
+                                }
 
+                                if (h.ToUpper().Trim() == "PARTNERTIME")
+                                {
+                                    pt = c;
+                                }
+
+                                if (h.ToUpper().Trim() == "TOTALRECORDINGTIME")
+                                {
+                                    rt = c;
+                                }
+                                c++;
+
+                            }
+                        }
+                         
                         while ((!sr.EndOfStream))// && lineCount < 10000)
                         {
                             commaLine = sr.ReadLine();
                             line = commaLine.Split(',');
-
+                            String newCommaLine = "";
+                            int c = 0;
                             String szKey = line[0].ToUpper() + "," +
                                 line[1].ToUpper() + "," +
                                 line[2].ToUpper();
 
+                            foreach (String val in line)
+                            {
+                                if(c==st)
+                                {
+                                    if (valsTime.ContainsKey(szKey))
+                                    {
+                                        newCommaLine += valsTime[szKey].Item1;
+                                    }
+                                    else
+                                    {
+                                        newCommaLine += line[c];
+                                    }
+                                }
+                                else if (c == pt)
+                                {
+                                    if (valsTime.ContainsKey(szKey))
+                                    {
+                                        newCommaLine += valsTime[szKey].Item2;
+                                    }
+                                    else
+                                    {
+                                        newCommaLine += line[c];
+                                    }
+                                }
+                                else if (c == rt)
+                                {
+                                    if (valsTime.ContainsKey(szKey))
+                                    {
+                                        newCommaLine += valsTime[szKey].Item3;
+                                    }
+                                    else
+                                    {
+                                        newCommaLine += line[c];
+                                    }
+                                }
+                                else
+                                {
+                                    newCommaLine += line[c];
+                                }
+                                c++;
+                                newCommaLine += ",";
+                            }
+                             
                             if (valsGp.ContainsKey(szKey))
                             {
-                                sw.WriteLine(commaLine + "," + valsGp[szKey]);
+                                sw.WriteLine(newCommaLine + "," + valsGp[szKey]);
                             }
                         }
                     }
@@ -377,8 +475,57 @@ namespace UL_Processor_V2020
             //String[] szClassroomsToProcess = { "DIR:E://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021,4/6/2021,4/13/2021,4/27/2021,5/20/2021,5/25/2021,6/8/2021,6/23/2021,7/28/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             //String[] szClassroomsToProcess = { "DIR:E://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:4/6/2021,4/27/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS1920// CLASSNAME:TURTLES_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 DAYS:11/13/2019,12/06/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-           // String[] szClassroomsToProcess = { "DIR:D://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-            String[] szClassroomsToProcess = { "DIR:D://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:4/6/2021,4/13/2021,4/27/2021,5/20/2021,5/25/2021,6/8/2021,6/23/2021,7/28/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:D://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:3/16/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:D://UL_2021// CLASSNAME:StarFish_2021 JUSTUBICLEANUP:NO GRMIN:0.2 ANGLE:45 GRMAX:2.5 HRMIN:7 HRMAX:13 DAYS:4/6/2021,4/13/2021,4/27/2021,5/20/2021,5/25/2021,6/8/2021,6/23/2021,7/28/2021 HACKT1:NO LENATIMES:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMDAY:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS1920// CLASSNAME:TURTLES_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 DAYS:11/13/2019,12/6/2019,1/24/2020,2/12/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:LEAP_AM_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:11/01/2019,12/09/2019,01/30/2020,02/28/2020,03/09/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:LEAP_AM_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:11/01/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1819// CLASSNAME:PRIDE_LEAP_AM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/23/2019,02/20/2019,03/20/2019,04/16/2019,5/30/2019 HACKT1:YES ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:LEAP_AM_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:11/01/2019,12/09/2019,01/30/2020,02/28/2020,03/09/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1819// CLASSNAME:PRIDE_LEAP_PM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/25/2019,02/20/2019,03/20/2019,04/16/2019,5/30/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1819// CLASSNAME:PRIDE_LEAP_AM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/23/2019,02/20/2019,03/20/2019,04/16/2019,5/30/2019 HACKT1:YES ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1819// CLASSNAME:PRIDE_LEAP_PM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/25/2019,02/20/2019,03/20/2019,04/16/2019,5/30/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:TURTLES_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 DAYS:11/13/2019,12/6/2019,1/24/2020,2/12/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1819// CLASSNAME:PRIDE_REVM_AM GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:01/30/2019,03/01/2019,03/19/2019,04/24/2019,5/28/2019 HACKT1:YES ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:LEAP_AM_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:11/01/2019,12/09/2019,01/30/2020,02/28/2020,03/09/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:TURTLES_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 DAYS:11/13/2019,12/6/2019,1/24/2020,2/12/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:AVENGERS_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 DAYS:1/23/2020,2/18/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:REVM_AM_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:11/06/2019,12/11/2019,01/29/2020,02/26/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS1920// CLASSNAME:LEAP_PM_1920 GRMIN:0.2 GRMAX:2 HRMIN:11 HRMAX:14 MINMAX:59 DAYS:11/01/2019,12/09/2019,01/30/2020,02/28/2020,03/09/2020 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:LEAP_AM_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:10/25/2021,11/19/2021,12/03/2021,01/28/2022,02/25/2022,03/29/2022,05/24/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:LEAP_AM_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:10 MINMAX:50 DAYS:10/25/2021,11/19/2021,12/03/2021,01/28/2022,02/25/2022,03/29/2022,05/24/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:LEAP_PM_2122 GRMIN:0.2 GRMAX:2 HRMIN:11 HRMAX:14 MINMAX:50 DAYS:10/25/2021,11/19/2021,12/03/2021,01/28/2022,02/25/2022,03/29/2022,05/24/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:LEAP_PM_2122 GRMIN:0.2 GRMAX:2 HRMIN:11 HRMAX:14 MINMAX:50 DAYS:10/25/2021 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022,03/30/2022,04/29/2022,05/18/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //  // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Turtles_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:09/30/2021,10/27/2021,11/10/2021,01/31/2022,02/24/2022,03/18/2022,04/13/2022,05/04/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:LadyBugs_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:09/09/2021,10/12/2021,10/14/2021 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:StarFish_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:09/02/2021,10/05/2021,10/07/2021 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
+
+
+            /*******************LAST RUNS************************
+             String[] szClassroomsToProcess = { "DIR:F://CLASSROOMS_2122// CLASSNAME:LadyBugs_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:" +
+           "09/09/2021,10/12/2021,10/14/2021,11/09/2021,12/09/2021,12/14/2021,01/13/2022,01/14/2022,02/08/2022,02/10/2022,03/08/2022,03/14/2022,04/14/2022,04/19/2022,05/12/2022,07/12/2022,07/14/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+           
+             String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:LEAP_AM_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:10 MINMAX:50 DAYS:10/25/2021,11/19/2021,12/03/2021,01/28/2022,02/25/2022,03/29/2022,05/24/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
+             *********************LAST RUNS***********************/
+            // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:LEAP_PM_2122 GRMIN:0.2 GRMAX:2 HRMIN:11 HRMAX:14 MINMAX:50 DAYS:10/25/2021,11/19/2021,12/03/2021,01/28/2022,02/25/2022,03/29/2022,05/24/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Turtles_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:09/30/2021,10/27/2021,11/10/2021,01/31/2022,02/24/2022,03/18/2022,04/13/2022,05/04/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
+            //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022,03/30/2022,05/18/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //  String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Avengers_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:10/06/2021,11/12/2021,12/10/2021,02/22/2022,04/06/2022,05/27/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
+            // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Avengers_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:11/12/2021 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+           // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:7 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
+            /****test runs ****/
+            //  String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS1920// CLASSNAME:LEAP_AM_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:12/09/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
 
 
 
@@ -390,16 +537,22 @@ namespace UL_Processor_V2020
                 /*1- Create Classroom Object, read and set Parameters*/
                 Classroom classRoom = new Classroom();
 
-                classRoom.useDenoised = true;//true;// true;// false;// false;// true;// false;
+                classRoom.useDenoised = true;// true;// true;//true;// true;// false;// false;// true;// false;
                 classRoom.ubiCleanup = true;// true;// false;// true;// false;
                 classRoom.reDenoise = false;//true;// false;// true;// false;
-                classRoom.addActivities = false;// true;
-               //  classRoom.activityTypes.Add("unstructured");
-                //classRoom.activityTypes.Add("GP");
-               // classRoom.activityTypes.Add("M");
+                classRoom.addActivities = false;// true;// true ;// true;
+              /*  classRoom.activityTypes.Add("unstructured");
+                classRoom.activityTypes.Add("structured");
+                classRoom.activityTypes.Add("GP");
+                classRoom.activityTypes.Add("M");
+                classRoom.activityTypes.Add("OuP");
+                classRoom.activityTypes.Add("C");
+                classRoom.activityTypes.Add("OrP");
+                classRoom.activityTypes.Add("MD");*/
+                //GP, OuP, M,C, OrP, MD
 
                 String[] args = szClassroomArgs.Split(' ');
-                foreach (String arg in args)
+                foreach (String arg in args) 
                 {
                     String[] setting = arg.Split(':');
                     if (setting.Length > 1)
@@ -414,6 +567,9 @@ namespace UL_Processor_V2020
                                 break;
                             case "REDENOISE":
                                 classRoom.reDenoise = setting[1].Trim().ToUpper() == "YES";
+                                break;
+                            case "HACKT1":
+                                classRoom.t1Hack = setting[1].Trim().ToUpper() == "YES";
                                 break;
                             case "USEDENOISED":
                                 classRoom.useDenoised = setting[1].Trim().ToUpper() == "YES";
@@ -470,30 +626,31 @@ namespace UL_Processor_V2020
 
 
 
-                Utilities.setVersion(classRoom.grMin, classRoom.grMax);//run day and GR version for file naming
+                Utilities.setVersion(classRoom.grMin, classRoom.grMax, classRoom.useDenoised, classRoom.activityTypes.Count>0);//run day and GR version for file naming
                 classRoom.mapById = "LONGID";
                 classRoom.setDirs();
 
 
-                //    Utilities.szVersion = "_GR0_22_051722_1358347332";// PAIRACTIVITY_GR0_22_051722_1358347332 "10_21_2020_2098687227";// "10_20_2020_419130690";// "10_20_2020_986296434";// "10_19_2020_1345568271";//10_19_2020_1345568271  10_19_2020_1700354507
-                //    classRoom.getPairActLeadsFromFiles();
+               //Utilities.szVersion = "_GR0_22_120422_V2275477135";// PAIRACTIVITY_GR0_22_051722_1358347332 "10_21_2020_2098687227";// "10_20_2020_419130690";// "10_20_2020_986296434";// "10_19_2020_1345568271";//10_19_2020_1345568271  10_19_2020_1700354507
+               //classRoom.getPairActLeadsFromFiles();
 
 
 
 
                 /*3- Set Classroom’s Base Mappings */
                 classRoom.setBaseMappings();
+                //  addGPtoFile("D:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_3_28_2021_187694180ALL.CSV", "D:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_070822_1036404247ALL.CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
+
+               // addGPtoFile("D:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_3_28_2021_187694180ALL.CSV", "D:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_071122_123110340ALL.CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
+
+
 
                 //denoise();
 
                 /*4 Clean ubi */
                 if (classRoom.ubiCleanup)
                     classRoom.clean();
-
-
-                // Batya's addGPtoFile("E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_7_10_2020_1186946197ALL.CSV", "E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_052522_35376472ALL.CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
-
-
+                 
 
                 if (classRoom.useDenoised)
                 {
@@ -502,7 +659,7 @@ namespace UL_Processor_V2020
 
                 /* 5 Process */
                 if (toProcess)
-                    classRoom.process(false, true);
+                    classRoom.process(true, true);
 
                 // classRoom.processGofRfiles();
                 // classRoom.processFromGofRfiles("", true);
@@ -515,9 +672,7 @@ namespace UL_Processor_V2020
 
                 //Utilities.szVersion = "10_26_2020_478216537";// "10_21_2020_2098687227";// "10_20_2020_419130690";// "10_20_2020_986296434";// "10_19_2020_1345568271";//10_19_2020_1345568271  10_19_2020_1700354507
                 classRoom.getPairActLeadsFromFiles();
-
-
-                //addGPtoFile("E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_7_10_2020_1186946197ALL.CSV", "E:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_052522_35376472ALL_"+ new Random().Next()+".CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
+              //  addGPtoFile("D:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY_ALL_4TURTLES_1920_3_28_2021_187694180ALL.CSV", "D:\\CLASSROOMS1920\\TURTLES_1920\\SYNC\\PAIRACTIVITY\\PAIRACTIVITY_GR0_22_071122_123110340ALL.CSV");//PAIRACTIVITY__GR0_22_051722_1358347332
 
 
 

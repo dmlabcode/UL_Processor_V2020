@@ -128,6 +128,13 @@ namespace UL_Processor_V2020
         {
             szVersion = "GR"+ minGr.ToString().Replace(".","_")+maxGr.ToString().Replace(".", "_")+"_"+getDateStrMMDDYY(DateTime.Now) + "_" + new Random().Next();
         }
+        public static void setVersion(double minGr, double maxGr, Boolean den,Boolean act)
+        {
+            szVersion = "GR" + minGr.ToString().Replace(".", "_") + maxGr.ToString().Replace(".", "_") + "_" + 
+                (den?"DEN_":"")+
+                (act ? "ACT_" : "") +
+                getDateStrMMDDYY(DateTime.Now) + "_V2" + new Random().Next();
+        }
         public static void setVersion()
         {
             szVersion =  getDateStrMMDDYY(DateTime.Now) + "_" + new Random().Next();
@@ -190,7 +197,7 @@ namespace UL_Processor_V2020
         }
         public static double getCenter(double x, double x2)
         {
-            double l = Math.Abs(x2 - x) / 2;
+            double l = x2 - x!=0?Math.Abs(x2 - x) / 2:0;
             return x < x2 ? x + l : x2 + l;
         }
         public static Tuple<double, double, double> getCenterAndOrientationFromLR(PersonSuperInfo pi)
@@ -244,10 +251,10 @@ namespace UL_Processor_V2020
                 double d_ba_x = -d_ab_y;
                 double d_ba_y = d_ab_x;
 
-                double da_x = (a.xl - a.xr) / 2;
-                double da_y = (a.yl - a.yr) / 2;
-                double db_x = (b.xl - b.xr) / 2;
-                double db_y = (b.yl - b.yr) / 2;
+                double da_x = a.xl - a.xr!=0? (a.xl - a.xr) / 2:a.xr;
+                double da_y = a.yl - a.yr != 0 ? (a.yl - a.yr) / 2 : a.yr;
+                double db_x = b.xl - b.xr != 0 ? (b.xl - b.xr) / 2 : b.xr;
+                double db_y = b.yl - b.yr != 0 ? (b.yl - b.yr) / 2 : b.yr;
 
                 normalize(ref da_x, ref da_y);
                 normalize(ref db_x, ref db_y);
