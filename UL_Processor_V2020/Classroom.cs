@@ -9,6 +9,8 @@ namespace UL_Processor_V2020
     class Classroom
     {
         public Boolean ubiCleanup = false;
+        public Boolean doRecInfo = true;
+        public Boolean processData = true;
         public Boolean useDenoised = false;
         public Boolean reDenoise = false;
         public Boolean t1Hack = false;

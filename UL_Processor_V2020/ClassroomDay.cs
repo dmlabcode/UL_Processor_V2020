@@ -1217,9 +1217,10 @@ foreach(String actType in activityTypes)// if(addActivities)
                          
 
                         Boolean orientedCloseness = withinGofR && ((Math.Abs(angles.Item1) <= angle && Math.Abs(angles.Item2) <= angle)||t1Hack);
-                        //
+                        //sw.WriteLine("Person 1, Person2, Interaction Time, Interaction Millisecond, Interaction, " + angle + "Interaction, Angle1, Angle2, Leftx,Lefty,Rightx,Righty, Leftx2,Lefty2,Rightx2,Righty2,Type1, Type2, Gender1, Gender2, Diagnosis1, Diagnosis2, WasTalking1, WasTalking2 ");
+
                         if (doAngles)
-                            sw.WriteLine(pair.szSubjectMapId + "," +
+                            sw.WriteLine(                                   pair.szSubjectMapId + "," +
                                                                             pair.szPartnerMapId + "," +
                                                                             t.ToLongTimeString() + "," +
                                                                             t.Millisecond + "," +

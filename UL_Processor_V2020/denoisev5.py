@@ -134,9 +134,9 @@ def pair_and_interpolate_motion_data(
             continue  # No overlapped data, drop the subject
 
         while t <= t_max:
-            while data_l["Time"][idx_l] < t:
+            while idx_l<=0 or data_l["Time"][idx_l] < t:
                 idx_l += 1
-            while data_r["Time"][idx_r] < t:
+            while idx_r<=0 or data_r["Time"][idx_r] < t:
                 idx_r += 1
 
             sdata["Time"].append(t)

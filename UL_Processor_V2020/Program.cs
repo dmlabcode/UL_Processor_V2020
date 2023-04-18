@@ -517,11 +517,14 @@ namespace UL_Processor_V2020
             // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Turtles_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:09/30/2021,10/27/2021,11/10/2021,01/31/2022,02/24/2022,03/18/2022,04/13/2022,05/04/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
 
             //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022,03/30/2022,05/18/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-            //  String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Avengers_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:10/06/2021,11/12/2021,12/10/2021,02/22/2022,04/06/2022,05/27/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-
+            //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Avengers_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:10/06/2021,11/12/2021,12/10/2021,02/22/2022,04/06/2022,05/27/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
             // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Avengers_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:11/12/2021 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-           // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
-            String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:7 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+
+            //String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:Avengers_2122 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:13 MINMAX:50 DAYS:11/12/2021 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            //String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:7 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:E://CLASSROOMS_2122// CLASSNAME:Room4_2122 GRMIN:0.2 GRMAX:2 HRMIN:7 HRMAX:14 MINMAX:50 DAYS:12/06/2021,01/26/2022,02/09/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            // String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2223// CLASSNAME:Turtles_2223 GRMIN:0.2 GRMAX:2 HRMIN:7 HRMAX:14 MINMAX:50 DAYS:02/28/2023 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
+            String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS_2122// CLASSNAME:LEAP_PM_2122 GRMIN:0.2 GRMAX:2 HRMIN:11 HRMAX:14 MINMAX:50 DAYS:02/25/2022 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
 
             /****test runs ****/
             //  String[] szClassroomsToProcess = { "DIR:D://CLASSROOMS1920// CLASSNAME:LEAP_AM_1920 GRMIN:0.2 GRMAX:2 HRMIN:8 HRMAX:11 MINMAX:50 DAYS:12/09/2019 HACKT1:NO ONSETS:YES TEN:YES VEL:NO ANGLES:YES SUMALL:YES ITS:YES GR:YES DBS:YES APPROACH:YES SOCIALONSETS:YES" };
@@ -537,8 +540,8 @@ namespace UL_Processor_V2020
                 /*1- Create Classroom Object, read and set Parameters*/
                 Classroom classRoom = new Classroom();
 
-                classRoom.useDenoised = true;// true;// true;//true;// true;// false;// false;// true;// false;
-                classRoom.ubiCleanup = true;// true;// false;// true;// false;
+                classRoom.useDenoised = true;// true;// true;// true;//true;// true;// false;// false;// true;// false;
+                classRoom.ubiCleanup = true;//  true;// true;// false;// true;// false;
                 classRoom.reDenoise = false;//true;// false;// true;// false;
                 classRoom.addActivities = false;// true;// true ;// true;
               /*  classRoom.activityTypes.Add("unstructured");
@@ -552,13 +555,22 @@ namespace UL_Processor_V2020
                 //GP, OuP, M,C, OrP, MD
 
                 String[] args = szClassroomArgs.Split(' ');
+                
                 foreach (String arg in args) 
                 {
                     String[] setting = arg.Split(':');
+                     
                     if (setting.Length > 1)
                     {
                         switch (setting[0].Trim())
                         {
+                            case "DORECINFO":
+                                classRoom.ubiCleanup = setting[1].Trim().ToUpper() == "YES";
+                                break;
+                            case "EXISTINGVERSION":
+                                classRoom.processData = false;
+                                Utilities.szVersion = setting[1].Trim();
+                                break;
                             case "UBICLEANUP":
                                 classRoom.ubiCleanup = setting[1].Trim().ToUpper() == "YES";
                                 break;
@@ -625,8 +637,9 @@ namespace UL_Processor_V2020
                      Create directories for distinct reports*/
 
 
-
-                Utilities.setVersion(classRoom.grMin, classRoom.grMax, classRoom.useDenoised, classRoom.activityTypes.Count>0);//run day and GR version for file naming
+                if(Utilities.szVersion.Trim() == "")
+                    Utilities.setVersion(classRoom.grMin, classRoom.grMax, classRoom.useDenoised, classRoom.activityTypes.Count>0);//run day and GR version for file naming
+                
                 classRoom.mapById = "LONGID";
                 classRoom.setDirs();
 
