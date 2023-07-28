@@ -1785,10 +1785,7 @@ foreach(String actType in activityTypes)// if(addActivities)
 
                                         }
 
-                                        if(ubiLoc.id== "DS_STARFISH_2122_19")
-                                        {
-                                            bool stop = true;
-                                        }
+                                        
                                         if (datePassHackTurtles &&
                                             ubiLoc.id != "" &&
                                             subjectStartLena.ContainsKey(ubiLoc.id) &&
@@ -1797,11 +1794,7 @@ foreach(String actType in activityTypes)// if(addActivities)
                                             lineTime <= subjectEndLena[ubiLoc.id])
                                         {
 
-                                            if (tag.Trim() == "00:11:CE:00:00:00:02:CE")
-                                            {
-
-                                                tag = tag;
-                                            }
+                                            
                                             ubiLoc.x = xPos;
                                             ubiLoc.y = yPos;
                                             ubiLoc.time = lineTime;
@@ -2990,8 +2983,6 @@ foreach(String actType in activityTypes)// if(addActivities)
             ubiLocationsL.Clear();
             ubiLocationsR.Clear();
             DateTime trunk = getUbiTrunkTime();
-            
-
             foreach (DateTime szTimeStamp in ubiTenthsL.Keys)
             {
                 Boolean includeTime = szTimeStamp.Year > 2020 || (szTimeStamp.CompareTo(trunk) <= 0);
@@ -3008,7 +2999,9 @@ foreach(String actType in activityTypes)// if(addActivities)
                             psi.yl = ubiTenthsL[szTimeStamp][person].y;
                             psi.xr = ubiTenthsR[szTimeStamp][person].x;
                             psi.yr = ubiTenthsR[szTimeStamp][person].y;
-
+                            double dist = (psi.xl > psi.xr ? psi.xl - psi.xr : psi.xr - psi.xl);
+                            double dist2 = Math.Sqrt(Math.Pow(psi.xl - psi.xr, 2) + Math.Pow(psi.yl - psi.yr, 2));
+ 
                             Tuple<double, double, double> xyo = Utilities.getCenterAndOrientationFromLR(psi);
                             psi.x = xyo.Item1;
                             psi.y = xyo.Item2;
@@ -3031,7 +3024,10 @@ foreach(String actType in activityTypes)// if(addActivities)
                  
 
             }
+            
+
             ubiTenths = ubiTenths.OrderBy(x => x.Key).ThenBy(x => x.Key.Millisecond).ToDictionary(x => x.Key, x => x.Value);
+            
         }
         public static DateTime getMsTime(DateTime first)
         {

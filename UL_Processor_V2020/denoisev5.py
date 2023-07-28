@@ -32,11 +32,12 @@ def load_mapping_file(path: Path, remove_lab: bool = False) -> pd.DataFrame:
     Returns:
         pd.DataFrame: the metadata of subjects in the classroom in a DataFrame indexed by subject ID
     """
-
+    logging.warning("HELLO")
     data = dict()
     for _, row in pd.read_csv(path, dtype=str, keep_default_na=False).iterrows():
+        logging.warning("HELLO")
         subject_id = row["Subject_ID"]
-        if subject_id != "":
+        if subject_id != "" and row[8]!="" and row["Left Tag"]!="" and row["Right Tag"]!="" :
             # Validate the integrity of subject types
             if row["TYPE"] not in SUBJECT_TYPES:
                 raise ValueError("Unknown subject type in the mapping file: {}".format(row["TYPE"]))
@@ -45,7 +46,7 @@ def load_mapping_file(path: Path, remove_lab: bool = False) -> pd.DataFrame:
                 continue
             if row["STATUS"] == "ABSENT":
                 continue
-            logging.warning("HELLO")
+            
             data[subject_id] = {
                 "Name": row[0],
                 "Type": row["TYPE"],
