@@ -1744,7 +1744,7 @@ foreach(String actType in activityTypes)// if(addActivities)
                 String fileName = Path.GetFileName(file);
                 
                  
-                    if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith(".log"))
+                    if ((fileName.StartsWith("MiamiLocation")|| fileName.StartsWith("MiamiDataLogger")) && fileName.EndsWith(".log"))
                 {
 
                     using (StreamReader sr = new StreamReader(file))
@@ -2105,7 +2105,7 @@ foreach(String actType in activityTypes)// if(addActivities)
                 foreach (string file in fubiLogFiles)
                 {
                     String fileName = Path.GetFileName(file);
-                    if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith("_filtered.log"))
+                    if ((fileName.StartsWith("MiamiLocation") || fileName.StartsWith("MiamiDataLogger")) && fileName.EndsWith("_filtered.log"))
                     {
                         File.Delete(file);
                     }
@@ -2119,7 +2119,7 @@ foreach(String actType in activityTypes)// if(addActivities)
             foreach (string file in ubiLogFiles)
             {
                 String fileName = Path.GetFileName(file);
-                if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith(".log") && (!fileName.EndsWith("_filtered.log")))
+                if ((fileName.StartsWith("MiamiLocation") || fileName.StartsWith("MiamiDataLogger")) && (!fileName.EndsWith("_filtered.log")))
                 {
                     TextWriter sw = new StreamWriter(szUnDenoisedFolder + "//"+fileName.Replace(".log", "_filtered.log"));// countDays > 0);
                     using (StreamReader sr = new StreamReader(file))
@@ -2160,7 +2160,7 @@ foreach(String actType in activityTypes)// if(addActivities)
             foreach (string file in ubiLogFiles)
             {
                 String fileName = Path.GetFileName(file);
-                if (fileName.StartsWith("MiamiLocation") && fileName.EndsWith(".log") && (!fileName.EndsWith("_filtered.log")))
+                if ((fileName.StartsWith("MiamiLocation") || fileName.StartsWith("MiamiDataLogger")) && (!fileName.EndsWith("_filtered.log")))
                 {
                     File.Move(file, szUnDenoisedUnfilteredFolder + "//" + fileName);
                 }
@@ -2181,7 +2181,7 @@ foreach(String actType in activityTypes)// if(addActivities)
                 foreach (string file in ubiLogFiles)
                 {
                     String ubiFileName = Path.GetFileName(file);
-                    if (ubiFileName.StartsWith("MiamiLocation") && ubiFileName.EndsWith(".log"))
+                    if (ubiFileName.StartsWith("MiamiLocation") || ubiFileName.StartsWith("MiamiDataLogger") && ubiFileName.EndsWith(".log"))
                     {
                         string cmd = Path.Combine(AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", ""), "denoisev5.py");
                         string cmdPython = cmd.Replace("denoisev5.py", "\\Python310\\python.exe");
